@@ -1,0 +1,6 @@
+# Executable files
+*.dll
+*.exe
+
+# Misc. stuff
+*.txt
