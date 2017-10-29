@@ -12,6 +12,7 @@ That sums up the whole thing.
 Windows
 
 - [Allegro5](https://www.allegro.cc/)
+- [libcurl](https://curl.haxx.se/libcurl/)
 
 Nintendo 3DS
 
