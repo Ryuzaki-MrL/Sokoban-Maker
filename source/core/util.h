@@ -1,11 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#define MIN(x,y) ((x < y) ? x : y)
-#define MAX(x,y) ((x > y) ? x : y)
-
-void arraySort(unsigned arr[], unsigned n);
-
 void initUserFolder();
 const char* getUserPath();
 const char* getLevelPath();
