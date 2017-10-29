@@ -1,0 +1,28 @@
+#include <windows.h>
+
+ALLEGRO_ICON ICON Sokomaker.ico
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+	 {
+		 BLOCK "040904E4"
+		 {
+			 VALUE "CompanyName", ""
+			 VALUE "FileVersion", "1.0.0"
+			 VALUE "FileDescription", "Sokoban Maker"
+			 VALUE "InternalName", "ED1GAME"
+			 VALUE "LegalCopyright", "(c) Lazaro Vieira 2017"
+			 VALUE "LegalTrademarks", ""
+			 VALUE "OriginalFilename", "Sokomake.exe"
+			 VALUE "ProductName", "SOKOBAN MAKER"
+			 VALUE "ProductVersion", "1.0.0"
+		 }
+	 }
+  BLOCK "VarFileInfo"
+	 {
+		 VALUE "Translation", 0x0409, 1252
+	 }
+}

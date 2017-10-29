@@ -1,6 +1,13 @@
+# Output
+build_3ds
+build_wiiu
+output
+
 # Executable files
 *.dll
 *.exe
+*.elf
 
 # Misc. stuff
 *.txt
+*.bat
