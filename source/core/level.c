@@ -37,6 +37,10 @@ struct sObj {
 
 #pragma pack(pop)
 
+static inline unsigned short __builtin_bswap16(unsigned short a) {
+    return (a<<8)|(a>>8);
+}
+
 void newLevel() {
     entityDestroyAll();
     memset(&level, 0, sizeof(level));
