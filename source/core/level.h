@@ -41,6 +41,7 @@ typedef struct sLevelMeta {
     char author[32];
     unsigned ctime;
     unsigned hrand;
+    int valid;
 } levelmeta_t;
 
 extern level_t level;

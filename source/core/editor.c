@@ -236,6 +236,11 @@ void editorStopLevel() {
     state = ST_EDITOR;
 }
 
+void editorValidateLevel() {
+    editorStopLevel();
+    currentlevel.valid = 1;
+}
+
 static void drawGrid() {
     int ox = level.cam.scx >> 5;
     int oy = level.cam.scy >> 5;

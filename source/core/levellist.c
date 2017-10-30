@@ -27,7 +27,7 @@ void openUserLevelList(int mode) {
     DIR* dir = opendir(getLevelPath());
     while((ent = readdir(dir)) != NULL) {
         levelmeta_t* meta = getLevelMeta(ent->d_name);
-        if (!meta) continue;
+        if ((meta == NULL) || (mode == LISTMODE_UPLOAD && !meta->valid)) continue;
         insertAt(&levels, -1, meta);
     }
     closedir(dir);

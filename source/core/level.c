@@ -170,7 +170,7 @@ int saveLevel(levelmeta_t* meta) {
     struct sLevelHeader levelheader;
     memcpy(levelheader.magic, "RBLV", 4);
     levelheader.bom = 0xFEFF;
-    levelheader.hash = 0; // TODO: validate levels
+    levelheader.hash = 0;
     levelheader.robotx = getRobotX();
     levelheader.roboty = getRobotY();
     levelheader.objcount = getEntityCount(ENT_ANY) - 1;

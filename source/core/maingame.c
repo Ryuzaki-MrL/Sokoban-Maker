@@ -38,7 +38,7 @@ static void updateEntityAux(void* data) {
                     if ((int)ent->frame==0) {
                         level.boxes--;
                         if (level.boxes == 0) {
-                            error(getMessage(MSG_COMPLETE), editorStopLevel);
+                            error(getMessage(MSG_COMPLETE), editorValidateLevel);
                             return;
                         }
                     }

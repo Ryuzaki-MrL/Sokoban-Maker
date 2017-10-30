@@ -13,5 +13,6 @@ void drawLevelEditor();
 void editorCommitLevel();
 void editorPlayLevel();
 void editorStopLevel();
+void editorValidateLevel();
 
 #endif // EDITOR_H
