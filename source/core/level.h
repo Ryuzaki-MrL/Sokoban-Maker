@@ -57,4 +57,6 @@ int saveLevel(levelmeta_t* meta);
 int downloadLevel(const char* fname);
 void uploadLevel(const char* fname);
 
+int deleteLevel(const char* fname);
+
 #endif // LEVEL_H

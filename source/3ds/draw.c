@@ -5,11 +5,6 @@
 #include "entity.h"
 #include "input.h"
 #include "state.h"
-#include "maingame.h"
-#include "pause.h"
-#include "editor.h"
-#include "levellist.h"
-#include "titlescreen.h"
 
 //static int font = 1000;
 static int logo = 1001;
@@ -54,7 +49,7 @@ void drawTextFormat(Color color, int x, int y, const char* str, ...) {
     char buffer[256];
     va_list valist;
     va_start(valist, str);
-    vsnprintf(buffer, 256, str, valist);
+    vsnprintf(buffer, 255, str, valist);
     pp2d_draw_text(x, y, 1, 1, color, buffer);
     va_end(valist);
 }
@@ -143,11 +138,12 @@ void draw() {
         case ST_EDITOR: drawLevelEditor(); break;
         default: drawLevel(); break;
     }
-    if (state == ST_EDITOR) {
-        pp2d_draw_on(GFX_TOP, GFX_LEFT);
+    if (state != ST_EDITOR) {
+        pp2d_draw_on(GFX_BOTTOM, GFX_LEFT);
     }
     switch(hud) {
         case H_MESSAGE: drawError(); break;
+        case H_QUESTION: drawQuestion(); break;
     }
     pp2d_end_draw();
 }

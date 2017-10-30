@@ -5,6 +5,7 @@
 
 void editorStart(levelmeta_t* meta);
 void editorExit(int commit);
+void editorSaveQuit();
 
 void updateLevelEditor();
 void drawLevelEditor();

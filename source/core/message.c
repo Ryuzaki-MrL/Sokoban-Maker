@@ -40,7 +40,11 @@ static const char* messages[LANGCOUNT][1000] = {
         "Nível baixado com sucesso!",
         "Falha ao baixar nível.",
         "Usuário",
-        "Senha"
+        "Senha",
+        "Sim",
+        "Não",
+        "Salvar alterações do nível?",
+        "Deletar nível selecionado?"
     }, {
         "New Game",
         "Continue",
@@ -72,7 +76,11 @@ static const char* messages[LANGCOUNT][1000] = {
         "Level successfully downloaded!",
         "Failed to download level.",
         "Username",
-        "Password"
+        "Password",
+        "Yes",
+        "No",
+        "Save changes?",
+        "Delete selected level?"
     }
 };
 static const char* nullmsg = "NULL";

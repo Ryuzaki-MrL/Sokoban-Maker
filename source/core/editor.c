@@ -18,6 +18,7 @@ static stack_t* redostack = NULL;
 
 static levelmeta_t currentlevel;
 static int hasfname = 0;
+static int modified = 0;
 
 static int rx = 0;
 static int ry = 0;
@@ -88,7 +89,23 @@ static void redo() {
     
 }
 */
+static void editorAddAtPos(int x, int y) {
+    modified = 1;
+    if (tilemode) {
+        TILE_SET(x, y, seltile);
+    } else {
+        if (selent == ENT_ROBOT) {
+            resetRobot((x>>5)<<5, (y>>5)<<5);
+        } else {
+            if (selent == ENT_BOX)
+                level.boxes++;
+            entityAdd((x>>5)<<5, (y>>5)<<5, selent);
+        }
+    }
+}
+
 static void editorDeleteAtPos(int x, int y) {
+    modified = 1;
     entity_t* ent = entityCollision(x, y, 1, 1, ENT_BOX);
     if (ent && entityDestroyPos(x, y, 1, 1, ent->id)) {
         level.boxes--;
@@ -116,7 +133,15 @@ void editorExit(int commit) {
     destroyStack(redostack);
     if (commit)
         editorCommitLevel();
-    state = (ST_TITLE);
+    state = ST_TITLE;
+}
+
+void editorSaveQuit() {
+    if (modified) {
+        question(getMessage(QST_SAVELEVEL), editorExit);
+    } else {
+        editorExit(0);
+    }
 }
 
 void updateLevelEditor() {
@@ -181,16 +206,8 @@ void updateLevelEditor() {
                     cursor = i;
                 }
             }
-        } else if (tilemode) { // Senão, cria o tile/objeto selecionado
-            TILE_SET(mouse_scx, mouse_scy, seltile);
         } else {
-            if (selent == ENT_ROBOT) {
-                resetRobot((mouse_scx>>5)<<5, (mouse_scy>>5)<<5);
-            } else {
-                if (selent == ENT_BOX)
-                    level.boxes++;
-                entityAdd((mouse_scx>>5)<<5, (mouse_scy>>5)<<5, selent);
-            }
+            editorAddAtPos(mouse_scx, mouse_scy);
         }
     } else if (mouse_btn == MBT_RIGHT) { // O botão direito remove tiles/objetos
         editorDeleteAtPos(mouse_scx, mouse_scy);

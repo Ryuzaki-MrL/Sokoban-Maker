@@ -1,0 +1,15 @@
+#ifndef KEYDEFS_H
+#define KEYDEFS_H
+
+#include <allegro5/allegro.h>
+
+#define KEY_LEFT    (ALLEGRO_KEY_LEFT)
+#define KEY_RIGHT   (ALLEGRO_KEY_RIGHT)
+#define KEY_UP      (ALLEGRO_KEY_UP)
+#define KEY_DOWN    (ALLEGRO_KEY_DOWN)
+#define KEY_CANCEL  (ALLEGRO_KEY_ESCAPE)
+#define KEY_CONFIRM (ALLEGRO_KEY_ENTER)
+#define KEY_EXTRA   (ALLEGRO_KEY_LCTRL)
+#define KEY_DELETE  (ALLEGRO_KEY_DELETE)
+
+#endif // KEYDEFS_H

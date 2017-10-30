@@ -9,11 +9,6 @@
 #include "robot.h"
 #include "input.h"
 #include "state.h"
-#include "maingame.h"
-#include "pause.h"
-#include "editor.h"
-#include "levellist.h"
-#include "titlescreen.h"
 
 static ALLEGRO_FONT* font = NULL;
 static ALLEGRO_BITMAP* logo = NULL;
@@ -64,7 +59,7 @@ void drawTextFormat(Color color, int x, int y, const char* str, ...) {
     char buffer[256];
     va_list valist;
     va_start(valist, str);
-    vsnprintf(buffer, 256, str, valist);
+    vsnprintf(buffer, 255, str, valist);
     al_draw_text(font, color, x, y, 0, buffer);
     va_end(valist);
 }
@@ -93,8 +88,7 @@ void drawSprite(int sprite, int frame, int x, int y) {
     al_draw_bitmap_region(getSprite(sprite)->bitmap, frame<<5, 0, 32, 32, x, y, 0);
 }
 
-// Renderiza o tilemap do nível
-// Função baseada no exemplo de tilemap do allegro
+// Based on allegro5 tilemap example
 static void drawTilemap() {
     if (!tileset) return;
 
@@ -189,6 +183,7 @@ void draw() {
     switch(hud) {
         case H_INPUT: drawUserInput(); break;
         case H_MESSAGE: drawError(); break;
+        case H_QUESTION: drawQuestion(); break;
     }
     al_flip_display();
 }

@@ -12,10 +12,10 @@ void updatePauseMenu() {
     }
     if (isKeyDown(KEY_CONFIRM)) {
         switch(cursor) {
-            case 0: state = (ST_EDITOR); break; // Resume
+            case 0: state = ST_EDITOR; break; // Resume
             case 1: editorCommitLevel(); break; // Save Level
             case 2: editorPlayLevel(); break; // Play Level
-            case 3: state = (ST_TITLE); break; //question(getMessage(QST_SAVELEVEL), editorExit); break; // Save & Quit
+            case 3: editorSaveQuit(); break; // Save & Quit
         }
     }
 }

@@ -1,13 +1,9 @@
 #include "update.h"
-#include "maingame.h"
-#include "pause.h"
-#include "editor.h"
-#include "levellist.h"
-#include "titlescreen.h"
 
 void update() {
     if (hud) {
         switch(hud) {
+            case H_QUESTION: updateQuestion(); break;
             case H_MESSAGE: updateError(); break;
             case H_INPUT: updateUserInput(); break;
         }

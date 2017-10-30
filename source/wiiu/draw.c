@@ -10,11 +10,6 @@
 #include "entity.h"
 #include "input.h"
 #include "state.h"
-#include "maingame.h"
-#include "pause.h"
-#include "editor.h"
-#include "levellist.h"
-#include "titlescreen.h"
 
 static unsigned char* screenBuf;
 static int scr_buf0_size = 0;
@@ -175,6 +170,7 @@ static void drawFontBitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y, Color color) {
 }
 
 static void drawTextAux(int x, int y, char* str, int w, Color color) {
+    // TODO: fix text vertical align on wiiu version
     if (!font) return;
 
     FT_GlyphSlot slot = ftface->glyph;
@@ -287,7 +283,7 @@ void drawTextFormat(Color color, int x, int y, const char* str, ...) {
     char buffer[256];
     va_list valist;
     va_start(valist, str);
-    vsnprintf(buffer, 256, str, valist);
+    vsnprintf(buffer, 255, str, valist);
     drawTextAux(x, y, buffer, DISPLAY_WIDTH, color);
     va_end(valist);
 }
@@ -399,6 +395,7 @@ void draw() {
     switch(hud) {
         case H_INPUT: drawUserInput(); break;
         case H_MESSAGE: drawError(); break;
+        case H_QUESTION: drawQuestion(); break;
     }
     drawFlipBuffers();
 }

@@ -33,6 +33,10 @@
 #define MSG_DOWNLOADNOK 28
 #define MSG_USERNAME    29
 #define MSG_PASSWORD    30
+#define MSG_YES         31
+#define MSG_NO          32
+#define QST_SAVELEVEL   33
+#define QST_DELLEVEL    34
 
 void setLanguage(int newlang);
 int getLanguage();

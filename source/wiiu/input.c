@@ -15,15 +15,11 @@ static int mouse_x = 0;
 static int mouse_y = 0;
 static int unichar = 0;
 
+static char msgcaption[260] = "";
 static char userinput[260] = "";
 static int inputpos = 0;
 static int inputmax = 0;
-
-static char msgcaption[260] = "";
-
-static clb errorclb = NULL;
 static icb inputclb = NULL;
-static qcb questionclb = NULL;
 
 static const int kbalpha[] = {
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '/',
@@ -120,13 +116,6 @@ void getUserInput(int size, const char* caption, icb callback) {
     inputclb = callback;
 }
 
-void error(const char* caption, clb callback) {
-    if (!caption) return;
-    hud = H_MESSAGE;
-    errorclb = callback;
-    strncpy(msgcaption, caption, sizeof(msgcaption)-1);
-}
-
 #define ENTRY_X1    (DISPLAY_WIDTH>>2)
 #define ENTRY_X2    (DISPLAY_WIDTH - ENTRY_X1)
 #define ENTRY_Y1    (64)
@@ -196,13 +185,6 @@ void updateUserInput() {
     unichar = 0;
 }
 
-void updateError() {
-    if (isKeyDown(KEY_ANY)) {
-        hud = 0;
-        if (errorclb) errorclb();
-    }
-}
-
 #define KEYCOLOR    RGBA8(248,248,248,255)
 
 void drawUserInput() {
@@ -236,9 +218,4 @@ void drawUserInput() {
         drawRectangle(x, ENTRY_Y2+224, x+p-8, ENTRY_Y2+224+56, KEYCOLOR, 1);
         drawTextCenter(C_BLACK, x+((p-8)>>1), ENTRY_Y2+224+20, kbbottom[i]);
     }
-}
-
-void drawError() {
-    drawRectangle(ENTRY_X1, ENTRY_Y1, ENTRY_X2, ENTRY_Y2, RGBA8(255,255,255,220), 1);
-    drawTextMultiline(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 16, (ENTRY_X2 - ENTRY_X1 - 32), 1, msgcaption);
 }

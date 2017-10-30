@@ -4,7 +4,7 @@
 
 #include "draw.h"
 #include "robot.h"
-#include "input.h"
+#include "textbox.h"
 #include "network.h"
 #include "util.h"
 
@@ -211,4 +211,10 @@ void uploadLevel(const char* fname) {
     char path[260];
     sprintf(path, "%s/%s", getLevelPath(), fname);
     error(uploadFile(URL_ROOT"levels/upload.php", path), NULL);
+}
+
+int deleteLevel(const char* fname) {
+    char path[260];
+    sprintf(path, "%s/%s", getLevelPath(), fname);
+    return remove(path);
 }

@@ -72,6 +72,20 @@ static int sortLevelByAuthor(const void* data1, const void* data2) {
     return (strcasecmp(m1->author, m2->author)<=0);
 }
 
+static void deleteLevelFromList(int option) {
+    if (option) {
+        levelmeta_t* meta = (levelmeta_t*)getNodeData(&levels, cursor);
+        if (meta) {
+            deleteLevel(meta->filename);
+            if (online) {
+                openOnlineLevelList(listmode);
+            } else {
+                openUserLevelList(listmode);
+            }
+        }
+    }
+}
+
 void updateLevelList() {
     if (isKeyHeld(KEY_EXTRA)) {
         if (isKeyDown(KEY_DOWN)) {
@@ -102,6 +116,9 @@ void updateLevelList() {
             }
         }
     }
+    if (isKeyDown(KEY_DELETE) && (!online || listmode == LISTMODE_MYLEVELS)) {
+        question(getMessage(QST_DELLEVEL), deleteLevelFromList);
+    }
 }
 
 #define ENTRY_X1    (DISPLAY_WIDTH / 8)
@@ -116,7 +133,7 @@ static void drawLevelEntry(void* data) {
     drawRectangle(ENTRY_X1 + 8, ENTRY_Y1 + yoffs, ENTRY_X2 - 8, ENTRY_Y2 + yoffs, RGBA8(220,220,220,240), 1);
     drawText(      C_BLACK, ENTRY_X1 + 16, ENTRY_Y1 + 20 + yoffs, m->title);
     drawText(      C_BLACK, ENTRY_X1 + 16, ENTRY_Y1 + 40 + yoffs, m->author);
-    drawTextFormat(C_BLACK, ENTRY_X1 + 16, ENTRY_Y1 + 60 + yoffs, "%.2lf KB", m->filesize/1024.0);
+    drawTextFormat(C_BLACK, ENTRY_X1 + 16, ENTRY_Y1 + 60 + yoffs, "%.2f KB", m->filesize/1024.0);
     // TODO: level preview image
 }
 

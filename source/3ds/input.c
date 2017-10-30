@@ -6,11 +6,6 @@ static u32 kheld = 0;
 static u32 kup = 0;
 static touchPosition touch = { 0 };
 
-static char msgcaption[260] = "";
-
-static clb errorclb = NULL;
-static qcb questionclb = NULL;
-
 void updateInput() {
     hidScanInput();
     kdown = hidKeysDown();
@@ -67,34 +62,10 @@ void getUserInput(int size, const char* caption, icb callback) {
     }
 }
 
-void error(const char* caption, clb callback) {
-    if (!caption) return;
-    hud = H_MESSAGE;
-    errorclb = callback;
-    strncpy(msgcaption, caption, sizeof(msgcaption)-1);
-}
-
 void updateUserInput() {
-    
-}
-
-void updateError() {
-    if (isKeyDown(KEY_ANY)) {
-        if (errorclb) errorclb();
-        hud = 0;
-    }
+    // STUB
 }
 
 void drawUserInput() {
-    
-}
-
-#define ENTRY_X1    (DISPLAY_WIDTH>>2)
-#define ENTRY_X2    (DISPLAY_WIDTH - ENTRY_X1)
-#define ENTRY_Y1    (DISPLAY_HEIGHT/3)
-#define ENTRY_Y2    (DISPLAY_HEIGHT - ENTRY_Y1)
-
-void drawError() {
-    drawRectangle(ENTRY_X1, ENTRY_Y1, ENTRY_X2, ENTRY_Y2, RGBA8(255,255,255,220), 1);
-    drawTextMultiline(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1, (ENTRY_X2 - ENTRY_X1 - 32), 1, msgcaption);
+    // STUB
 }
