@@ -11,7 +11,6 @@ void initRobot(int x, int y) {
 }
 
 void updateRobot() {
-    // Camera
     if (robot->x >= (DISPLAY_WIDTH>>1)) {
         level.cam.scx = robot->x - (DISPLAY_WIDTH>>1);
     } else {
@@ -23,7 +22,6 @@ void updateRobot() {
         level.cam.scy = 0;
     }
 
-    // Movimento
     if (!robot->moving) {
         if (isKeyHeld(KEY_RIGHT)) {
             robot->xdir = 1;
@@ -45,13 +43,8 @@ void updateRobot() {
             robot->xdir = robot->ydir = 0;
         }
 
-        // O robô se move apenas se não houver uma parede
-        // na direção em que ele está indo
         robot->moving = (robot->xdir || robot->ydir) && (TILE_GET(robot->x + (robot->xdir<<5), robot->y + (robot->ydir<<5))!=TL_WALL);
 
-        // Verifica se há uma caixa em sua direção. Se sim, verifica
-        // se ela tem espaço para se mover. Só então o robô irá se
-        // mover e empurrar a caixa
         entity_t* col = entityCollision(robot->x + (robot->xdir<<5), robot->y + (robot->ydir<<5), 32, 32, ENT_BOX);
         if (col) {
             entity_t* boxcol = entityCollision(col->x + (robot->xdir<<5), col->y + (robot->ydir<<5), 32, 32, ENT_BOX);

@@ -22,9 +22,6 @@ typedef struct sCamera {
     int scy;
 } camera_t;
 
-// Os níveis têm um tamanho fixo de 3200x3200 pixels (100x100 tiles)
-// Acredito que ninguém nunca chegue a usar isso tudo.
-// Obs.: Por causa disso os campos width e height acabaram se tornando inúteis.
 typedef struct sLevel {
     int num;
     unsigned tilemap[TILE_ROW * TILE_ROW];
@@ -33,7 +30,6 @@ typedef struct sLevel {
     camera_t cam;
 } level_t;
 
-// Metadados de um nível. Usados somente pelo editor de níveis.
 typedef struct sLevelMeta {
     char filename[260];
     size_t filesize;

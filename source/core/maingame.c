@@ -7,18 +7,13 @@ static void updateEntityAux(void* data) {
     const sprite_t* spr = getSprite(ent->sprite);
     if (!ent || !spr) return;
 
-    // Se o objeto está se movendo...
     if (ent->moving) {
-        // Desloca-se "speed" pixels na direção "xdir" e "ydir"
         ent->x += ent->xdir * ent->speed;
         ent->y += ent->ydir * ent->speed;
 
-        // Se o objeto estiver alinhado com a grade...
         if (IS_SNAPPED(ent->x, ent->y)) {
-            // Para de se mover
             ent->moving = 0;
 
-            // Verifica em qual tile está pisando
             switch(TILE_GET(ent->x, ent->y)) {
                 case TL_HOLE: {
                     ent->visible = 0;

@@ -79,7 +79,6 @@ void drawSprite(int sprite, int frame, int x, int y) {
     pp2d_draw_texture_part(sprite, x, y, frame<<5, 0, 32, 32);
 }
 
-// Renderiza o tilemap do nível
 static void drawTilemap() {
     int x, y;
 
@@ -94,7 +93,6 @@ static void drawTilemap() {
     }
 }
 
-// Função auxiliar que renderiza um objeto
 static void drawEntityAux(void* data) {
     entity_t* ent = (entity_t*)data;
     const sprite_t* spr = getSprite(ent->sprite);
@@ -107,7 +105,6 @@ static void drawEntityAux(void* data) {
     pp2d_draw_texture_part(ent->sprite, ent->x - level.cam.scx, ent->y - level.cam.scy, i, 0, spr->width, spr->height);
 }
 
-// Percorre a lista de objetos e renderiza cada um usando a função acima
 static void drawEntities() {
     int i;
     for (i = 0; i < ENT_COUNT; i++) {

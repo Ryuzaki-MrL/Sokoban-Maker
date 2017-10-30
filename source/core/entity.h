@@ -3,7 +3,6 @@
 
 #include "level.h"
 
-// Organizado por prioridade
 #define ENT_ANY        -2
 #define ENT_NONE       -1
 #define ENT_ROBOT       0
@@ -11,9 +10,7 @@
 
 #define ENT_COUNT       2
 
-// A intenção era de criar uma estrutura para representar
-// um objeto qualquer do jogo, porém os únicos objetos
-// nesse jogo são as caixas e o robô.
+// Kinda useless struct, since there are only boxes.
 typedef struct sEntity {
     int id;
     int uid;

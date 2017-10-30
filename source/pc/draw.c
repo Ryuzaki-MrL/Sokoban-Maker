@@ -117,7 +117,6 @@ static void drawTilemap() {
     al_use_transform(&transform);
 }
 
-// Função auxiliar que renderiza um objeto
 static void drawEntityAux(void* data) {
     entity_t* ent = (entity_t*)data;
     const sprite_t* spr = getSprite(ent->sprite);
@@ -131,7 +130,6 @@ static void drawEntityAux(void* data) {
     al_draw_bitmap_region(spr->bitmap, i, 0, spr->width, spr->height, ent->x, ent->y, f);
 }
 
-// Percorre a lista de objetos e renderiza cada um usando a função acima
 static void drawEntities() {
     ALLEGRO_TRANSFORM transform;
     int scx = level.cam.scx;
@@ -150,7 +148,7 @@ static void drawEntities() {
     al_use_transform(&transform);
 }
 
-// Usado apenas para debug
+// Debug only
 static void drawDebug() {
     if (font) {
         al_draw_textf(font, C_WHITE, 0, 00, 0, "Robot: (%i, %i)", getRobotX(), getRobotY());
@@ -166,6 +164,9 @@ void drawSetBackground(const char* fname) {
 }
 
 void drawLevel() {
+#ifdef DEBUG
+    drawDebug();
+#endif
     drawBackground();
     drawTilemap();
     drawEntities();

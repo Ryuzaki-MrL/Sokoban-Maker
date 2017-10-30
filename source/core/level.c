@@ -47,7 +47,6 @@ void newLevel() {
 }
 
 static int loadLevelAux() {
-    // Carregar cabeçalho do nível
     struct sLevelHeader levelheader;
     if (!lvl || !fread(&levelheader, 1, sizeof(levelheader), lvl)) {
         fclose(lvl);
@@ -60,10 +59,8 @@ static int loadLevelAux() {
         levelheader.objcount = __builtin_bswap16(levelheader.objcount);
     }
 
-    // Limpar o nível anterior
     newLevel();
 
-    // Carregar tiles
     unsigned i, j;
     struct sTile tiledata;
     for (i = 0; i < TILE_ROW * TILE_ROW; i += tiledata.count) {
@@ -79,7 +76,6 @@ static int loadLevelAux() {
             level.tilemap[j] = tiledata.tile;
     }
 
-    // Carregar objetos (neste caso, as caixas)
     struct sObj objdata;
     for (i = 0; i < levelheader.objcount; i++) {
         if (!fread(&objdata, sizeof(objdata), 1, lvl))
@@ -94,9 +90,7 @@ static int loadLevelAux() {
     }
     fclose(lvl);
 
-    // Carregar robô
     initRobot(levelheader.robotx, levelheader.roboty);
-
     level.boxes = levelheader.objcount;
 
     return 1;
@@ -121,8 +115,6 @@ levelmeta_t* getLevelMeta(const char* fname) {
     levelmeta_t* meta = (levelmeta_t*)calloc(1, sizeof(levelmeta_t));
     if (!meta) return NULL;
 
-    // Checa se o arquivo existe e se de fato é um nível
-    // (todo nível começa com a sequência "RBLV")
     char path[260];
     strcpy(meta->filename, fname);
     sprintf(path, "%s/%s", getLevelPath(), fname);
@@ -135,12 +127,10 @@ levelmeta_t* getLevelMeta(const char* fname) {
         return NULL;
     }
 
-    // Título e autor
     header.title[15] = header.author[15] = '\0';
     strcpy(meta->title, header.title);
     strcpy(meta->author, header.author);
 
-    // Tamanho do arquivo
     fseek(file, 0, SEEK_END);
     meta->filesize = ftell(file);
     fclose(file);
@@ -160,13 +150,11 @@ static void saveLevelObject(void* data) {
 int saveLevel(levelmeta_t* meta) {
     if (!meta) return 0;
 
-    // Gerar o arquivo de saída
     char fname[260];
     sprintf(fname, "%s/%s", getLevelPath(), meta->filename);
     lvl = fopen(fname, "wb");
     if (!lvl) return 0;
 
-    // Salvar o cabeçalho
     struct sLevelHeader levelheader;
     memcpy(levelheader.magic, "RBLV", 4);
     levelheader.bom = 0xFEFF;
@@ -178,7 +166,6 @@ int saveLevel(levelmeta_t* meta) {
     strcpy(levelheader.author, meta->author);
     fwrite(&levelheader, 1, sizeof(levelheader), lvl);
 
-    // Salvar tiles
     int i;
     struct sTile tiledata = { .tile = 0, .count = 0 };
     for (i = 0; i < TILE_ROW * TILE_ROW; i++) {
@@ -192,7 +179,6 @@ int saveLevel(levelmeta_t* meta) {
     }
     fwrite(&tiledata, 1, sizeof(tiledata), lvl);
 
-    // Salvar objetos (caixas)
     foreach(getEntityList(ENT_BOX), saveLevelObject);
     fclose(lvl);
 

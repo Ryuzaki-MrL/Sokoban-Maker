@@ -340,7 +340,6 @@ void drawTile(int tile, int x, int y) {
     drawTexturePart(&tileset, x, y, tile<<5, 0, 32, 32);
 }
 
-// Renderiza o tilemap do nível
 static void drawTilemap() {
     int x, y;
     int ox = level.cam.scx >> 5;
@@ -354,7 +353,6 @@ static void drawTilemap() {
     }
 }
 
-// Função auxiliar que renderiza um objeto
 static void drawEntityAux(void* data) {
     entity_t* ent = (entity_t*)data;
     const sprite_t* spr = getSprite(ent->sprite);
@@ -366,7 +364,6 @@ static void drawEntityAux(void* data) {
     drawTexturePart(spr, ent->x - level.cam.scx, ent->y - level.cam.scy, ((int)ent->frame)<<5, 0, spr->width, spr->height);
 }
 
-// Percorre a lista de objetos e renderiza cada um usando a função acima
 static void drawEntities() {
     int i;
     for (i = 0; i < ENT_COUNT; i++) {

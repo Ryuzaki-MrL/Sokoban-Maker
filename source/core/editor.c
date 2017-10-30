@@ -146,24 +146,24 @@ void editorSaveQuit() {
 
 void updateLevelEditor() {
 #if !defined(_3DS) && !defined(__wiiu__)
-    if (isKeyHeld(KEY_EXTRA)) { // Atalhos
-        // CTRL + G: ativa/desativa a grade
+    if (isKeyHeld(KEY_EXTRA)) {
+        // CTRL + G: toggle grid
         if (isKeyDown(ALLEGRO_KEY_G)) {
             showgrid ^= 1;
         }
-        // CTRL + S: salva o nível
+        // CTRL + S: save level
         if (isKeyDown(ALLEGRO_KEY_S)) {
             editorCommitLevel();
         }
-        // CTRL + O: abre a lista de níveis
+        // CTRL + O: open level
         if (isKeyDown(ALLEGRO_KEY_O)) {
             openUserLevelList(LISTMODE_LOAD);
         }
-        // CTRL + Z: desfazer
+        // CTRL + Z: undo
         if (isKeyDown(ALLEGRO_KEY_Z)) {
             //undo();
         }
-        // CTRL + Y: refazer
+        // CTRL + Y: redo
         if (isKeyDown(ALLEGRO_KEY_Y)) {
             //redo();
         }
@@ -173,14 +173,14 @@ void updateLevelEditor() {
         showgrid ^= 1;
     }
 #endif
-    { // Movimento da câmera
+    {
         if (isKeyHeld(KEY_DOWN) && (level.cam.scy+CAMSPEED < (TILE_ROW<<5)-DISPLAY_HEIGHT)) level.cam.scy += CAMSPEED;
         else if (isKeyHeld(KEY_UP) && (level.cam.scy-CAMSPEED >= 0)) level.cam.scy -= CAMSPEED;
         if (isKeyHeld(KEY_RIGHT) && (level.cam.scx+CAMSPEED < (TILE_ROW<<5)-DISPLAY_WIDTH)) level.cam.scx += CAMSPEED;
         else if (isKeyHeld(KEY_LEFT) && (level.cam.scx-CAMSPEED >= 0)) level.cam.scx -= CAMSPEED;
     }
 
-    // Abre o menu
+    // Menu
     if (isKeyDown(KEY_CONFIRM) || isKeyDown(KEY_CANCEL)) {
         state = ST_PAUSE;
     }
@@ -209,7 +209,7 @@ void updateLevelEditor() {
         } else {
             editorAddAtPos(mouse_scx, mouse_scy);
         }
-    } else if (mouse_btn == MBT_RIGHT) { // O botão direito remove tiles/objetos
+    } else if (mouse_btn == MBT_RIGHT) {
         editorDeleteAtPos(mouse_scx, mouse_scy);
     }
 }
