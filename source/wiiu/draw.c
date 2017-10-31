@@ -170,8 +170,8 @@ static void drawFontBitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y, Color color) {
 }
 
 static void drawTextAux(int x, int y, char* str, int w, Color color) {
-    // TODO: fix text vertical align on wiiu version
     if (!font) return;
+    y += 8;
 
     FT_GlyphSlot slot = ftface->glyph;
     FT_Error error;
@@ -382,17 +382,16 @@ void drawLevel() {
 }
 
 void draw() {
-    switch(state) {
+    if (hud) switch(hud) {
+        case H_INPUT: drawUserInput(); break;
+        case H_MESSAGE: drawError(); break;
+        case H_QUESTION: drawQuestion(); break;
+    } else switch(state) {
         case ST_PAUSE: drawPauseMenu(); break;
         case ST_TITLE: drawTitleScreen(); break;
         case ST_LEVELS: drawLevelList(); break;
         case ST_EDITOR: drawLevelEditor(); break;
         default: drawLevel(); break;
-    }
-    switch(hud) {
-        case H_INPUT: drawUserInput(); break;
-        case H_MESSAGE: drawError(); break;
-        case H_QUESTION: drawQuestion(); break;
     }
     drawFlipBuffers();
 }

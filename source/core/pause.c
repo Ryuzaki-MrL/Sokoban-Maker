@@ -27,15 +27,8 @@ void drawPauseMenu() {
     drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 250, getMessage(MSG_SAVELEVEL));
     drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 230, getMessage(MSG_PLAYLEVEL));
     drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 210, getMessage(MSG_EXIT));
-#ifdef __wiiu__
-    drawRectangle(
-        DISPLAY_WIDTH/3 - 12, DISPLAY_HEIGHT - 270 + cursor*20,
-        DISPLAY_WIDTH/3 -  4, DISPLAY_HEIGHT - 262 + cursor*20, C_BLACK, 1
-    );
-#else
     drawRectangle(
         DISPLAY_WIDTH/3 - 12, DISPLAY_HEIGHT - 262 + cursor*20,
         DISPLAY_WIDTH/3 -  4, DISPLAY_HEIGHT - 254 + cursor*20, C_BLACK, 1
     );
-#endif
 }

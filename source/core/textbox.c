@@ -68,6 +68,6 @@ void drawQuestion() {
     drawError();
     drawRectangle(ENTRY_X1 + BTN_OFFSET, ENTRY_Y2 - BTN_HEIGHT, ENTRY_X1 + BTN_WIDTH, ENTRY_Y2 - (BTN_OFFSET>>1), (seloption==0) ? SEL_COLOR : BTN_COLOR, 1);
     drawRectangle(ENTRY_X2 - BTN_WIDTH, ENTRY_Y2 - BTN_HEIGHT, ENTRY_X2 - BTN_OFFSET, ENTRY_Y2 - (BTN_OFFSET>>1), (seloption==1) ? SEL_COLOR : BTN_COLOR, 1);
-    drawTextCenter(RGBA8(16, 16, 16, 255), ENTRY_X1 + (BTN_WIDTH>>1), ENTRY_Y2 - BTN_HEIGHT, getMessage(MSG_YES));
-    drawTextCenter(RGBA8(16, 16, 16, 255), ENTRY_X2 - (BTN_WIDTH>>1), ENTRY_Y2 - BTN_HEIGHT, getMessage(MSG_NO));
+    drawTextCenter(RGBA8(16, 16, 16, 255), ENTRY_X1 + (BTN_WIDTH>>1) + (BTN_OFFSET>>1), ENTRY_Y2 - BTN_HEIGHT, getMessage(MSG_YES));
+    drawTextCenter(RGBA8(16, 16, 16, 255), ENTRY_X2 - (BTN_WIDTH>>1) - (BTN_OFFSET>>1), ENTRY_Y2 - BTN_HEIGHT, getMessage(MSG_NO));
 }

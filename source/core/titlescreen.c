@@ -93,15 +93,8 @@ void drawTitleScreen() {
         drawText(      C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT -  60, getMessage(MSG_MYPROFILE));
         drawText(      C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT -  40, getMessage(MSG_LOGOUT));
     }
-#ifdef __wiiu__
-    drawRectangle(
-        DISPLAY_WIDTH/3 - 12, DISPLAY_HEIGHT - 120 + cursor[screen]*20,
-        DISPLAY_WIDTH/3 -  4, DISPLAY_HEIGHT - 112 + cursor[screen]*20, C_BLACK, 1
-    );
-#else
     drawRectangle(
         DISPLAY_WIDTH/3 - 12, DISPLAY_HEIGHT - 112 + cursor[screen]*20,
         DISPLAY_WIDTH/3 -  4, DISPLAY_HEIGHT - 104 + cursor[screen]*20, C_BLACK, 1
     );
-#endif
 }

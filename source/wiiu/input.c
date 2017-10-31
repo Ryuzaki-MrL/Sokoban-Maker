@@ -21,6 +21,8 @@ static int inputpos = 0;
 static int inputmax = 0;
 static icb inputclb = NULL;
 
+static int redraw = 2;
+
 static const int kbalpha[] = {
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '/',
     'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '"', '_', 
@@ -111,6 +113,7 @@ void getUserInput(int size, const char* caption, icb callback) {
     inputpos = 0;
     inputmax = size;
     unichar = 0;
+    redraw = 2;
     strncpy(msgcaption, caption, sizeof(msgcaption)-1);
     hud = H_INPUT;
     inputclb = callback;
@@ -158,12 +161,13 @@ void updateUserInput() {
             x += p;
             p = (1 + (kbbottom[i][0]==' '))*128;
             if (rectangleCollision(mouse_x, mouse_y, 1, 1, x, ENTRY_Y2+224, p-8, 56)) {
+                redraw = 2;
                 switch(kbbottom[i][0]) {
                     case 'S': kbshift ^= 1; break;
-                    case ' ': unichar = ' '; break;
                     case 'A': kbcurrent = kbalpha; break;
                     case '1': kbcurrent = kbnumber; break;
                     case '#': kbcurrent = kbsymbol; break;
+                    default:  unichar = ' '; redraw = 0; break;
                 }
                 return;
             }
@@ -193,6 +197,8 @@ void drawUserInput() {
     drawTextCenter(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 16, msgcaption);
     drawTextCenter(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 64 + 12, userinput);
 
+    if (!redraw) return;
+
     // On-screen keyboard
     unsigned i, x, y, p = 0;
     drawRectangle(0, ENTRY_Y2 + 16, DISPLAY_WIDTH, DISPLAY_HEIGHT, RGBA8(220,220,220,255), 1);
@@ -218,4 +224,6 @@ void drawUserInput() {
         drawRectangle(x, ENTRY_Y2+224, x+p-8, ENTRY_Y2+224+56, KEYCOLOR, 1);
         drawTextCenter(C_BLACK, x+((p-8)>>1), ENTRY_Y2+224+20, kbbottom[i]);
     }
+
+    redraw--;
 }
