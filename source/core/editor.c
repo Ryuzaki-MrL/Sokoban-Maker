@@ -91,6 +91,7 @@ static void redo() {
 */
 static void editorAddAtPos(int x, int y) {
     modified = 1;
+    currentlevel.valid = 0;
     if (tilemode) {
         TILE_SET(x, y, seltile);
     } else {
@@ -106,6 +107,7 @@ static void editorAddAtPos(int x, int y) {
 
 static void editorDeleteAtPos(int x, int y) {
     modified = 1;
+    currentlevel.valid = 0;
     entity_t* ent = entityCollision(x, y, 1, 1, ENT_BOX);
     if (ent && entityDestroyPos(x, y, 1, 1, ent->id)) {
         level.boxes--;
@@ -260,10 +262,15 @@ static void drawGrid() {
     }
 }
 
+#define C_VALID         RGBA8(0, 0x7F, 0, 0xFF)
+#define C_UNTESTED      RGBA8(0xFF, 0, 0, 0xFF)
+
 void drawLevelEditor() {
     drawLevel();
     if (showgrid) drawGrid();
 
+    drawRectangle(0, DISPLAY_HEIGHT - 24, 128, DISPLAY_HEIGHT, C_WHITE, 1);
+    drawTextCenter(currentlevel.valid ? C_VALID : C_UNTESTED, 64, DISPLAY_HEIGHT - 24, getMessage(MSG_UNTESTED + currentlevel.valid));
     drawRectangle(DISPLAY_WIDTH-80, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, C_WHITE, 1);
     drawRectangle(DISPLAY_WIDTH-64, (DISPLAY_HEIGHT/12 - 8) + cursor*48, DISPLAY_WIDTH-16, (DISPLAY_HEIGHT/12 + 40) + cursor*48, RGBA8(255,0,0,255), 1);
 
