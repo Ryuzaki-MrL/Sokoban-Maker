@@ -37,6 +37,8 @@
 #define MSG_NO          32
 #define QST_SAVELEVEL   33
 #define QST_DELLEVEL    34
+#define MSG_UNTESTED    35
+#define MSG_VALID       36
 
 void setLanguage(int newlang);
 int getLanguage();
