@@ -76,11 +76,20 @@ static void deleteLevelFromList(int option) {
     if (option) {
         levelmeta_t* meta = (levelmeta_t*)getNodeData(&levels, cursor);
         if (meta) {
-            deleteLevel(meta->filename);
             if (online) {
-                openOnlineLevelList(listmode);
+                httpStartConnection(URL_ROOT"levels/remove.php");
+                httpAddPostFieldText("fname", meta->filename);
+                const char* res = httpPost();
+                if (httpGetResponseCode() != 200) {
+                    error(res, NULL);
+                } else {
+                    openOnlineLevelList(listmode);
+                }
+                httpEndConnection();
             } else {
-                openUserLevelList(listmode);
+                if (deleteLevel(meta->filename)) {
+                    openUserLevelList(listmode);
+                }
             }
         }
     }
