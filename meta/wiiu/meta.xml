@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <app version="1">
-  <name>Sokoban Maker</name>
-  <coder>Ryuzaki_MrL</coder>
-  <version>1.0.0</version>
-  <release_date>00000000000000</release_date>
-  <short_description>Sokoban Maker</short_description>
-  <long_description>Sokoban Maker
+    <name>Sokoban Maker</name>
+    <coder>Ryuzaki_MrL</coder>
+    <version>1.0.0</version>
+    <release_date>00000000000000</release_date>
+    <short_description>Sokoban Maker</short_description>
+    <long_description>Sokoban Maker
 
-Create your own Sokoban puzzles and share online.
+    Create your own Sokoban puzzles and share online.
+
+    </long_description>
 <category>game</category>
 <url></url>
 </app>
