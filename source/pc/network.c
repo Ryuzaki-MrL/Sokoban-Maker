@@ -26,7 +26,7 @@ static int responsecode = 0;
 static string_t responsebody = { 0 };
 static string_t rawheaders = { 0 };
 static list_t responseheaders = { NULL, NULL, 0 };
-static char cookie[100] = { 0 };
+static char cookie[100] = "";
 
 static size_t writeCallback(void* data, size_t size, size_t nmemb, string_t* out) {
     size_t sz = size * nmemb;

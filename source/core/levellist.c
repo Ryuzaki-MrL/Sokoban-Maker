@@ -41,7 +41,9 @@ void openOnlineLevelList(int mode) {
 
     clearList(&levels);
 
-    json_t* json = json_loads(httpGet(mode == LISTMODE_MYLEVELS ? URL_ROOT"levels/?mylevels" : URL_ROOT"levels/"), JSON_DECODE_ANY, NULL);
+    const char* jsonstr = httpGet(mode == LISTMODE_MYLEVELS ? URL_ROOT"levels/?mylevels" : URL_ROOT"levels/");
+    if (!jsonstr) return;
+    json_t* json = json_loads(jsonstr, JSON_DECODE_ANY, NULL);
     int size = json_array_size(json);
     int i;
     for (i = 0; i < size; i++) {
@@ -54,6 +56,7 @@ void openOnlineLevelList(int mode) {
         strcpy(meta->title, json_string_value(json_object_get(jsonobject, "title")));
         strcpy(meta->author, json_string_value(json_object_get(jsonobject, "author")));
         meta->filesize = atoi(json_string_value(json_object_get(jsonobject, "filesize")));
+        meta->dld = atoi(json_string_value(json_object_get(jsonobject, "downloaded")));
 
         insertAt(&levels, -1, meta);
     }

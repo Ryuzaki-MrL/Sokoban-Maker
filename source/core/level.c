@@ -202,5 +202,5 @@ void uploadLevel(const char* fname) {
 int deleteLevel(const char* fname) {
     char path[260];
     sprintf(path, "%s/%s", getLevelPath(), fname);
-    return remove(path);
+    return (remove(path)==0);
 }

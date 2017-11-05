@@ -15,7 +15,7 @@
 
 #define TILE_GET(x,y) (((x)>=0&&(y)>=0) ? level.tilemap[((y)>>5)*TILE_ROW + ((x)>>5)] : TL_WALL)
 #define TILE_SET(x,y,t) (level.tilemap[((y)>>5)*TILE_ROW + ((x)>>5)] = t)
-#define IS_SNAPPED(x,y) (((x & 31)==0) && ((y & 31)==0))
+#define IS_SNAPPED(x,y) ((((x) & 31)==0) && (((y) & 31)==0))
 
 typedef struct sCamera {
     int scx;
@@ -38,6 +38,7 @@ typedef struct sLevelMeta {
     unsigned ctime;
     unsigned hrand;
     int valid;
+    unsigned dld;
 } levelmeta_t;
 
 extern level_t level;

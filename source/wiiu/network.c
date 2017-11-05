@@ -27,7 +27,7 @@ static int responsecode = 0;
 static string_t responsebody = { 0 };
 static string_t rawheaders = { 0 };
 static list_t responseheaders = { NULL, NULL, 0 };
-static char cookie[100] = { 0 };
+static char cookie[100] = "";
 
 static int writeCallback(void* data, int size, int nmemb, void* userp) {
     string_t* out = (string_t*)userp;
@@ -207,6 +207,8 @@ const char* uploadFile(const char* url, const char* path) {
     rewind(file);
 
     u8* buf = (u8*)calloc(1, fsize);
+    if (!buf) return NULL;
+
     fread(buf, 1, fsize, file);
     fclose(file);
 
