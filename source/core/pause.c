@@ -23,12 +23,12 @@ void updatePauseMenu() {
 void drawPauseMenu() {
     drawBackground();
     drawRectangle(80, 80, DISPLAY_WIDTH - 80, DISPLAY_HEIGHT - 80, RGBA8(255,255,255,220), 1);
-    drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 270, getMessage(MSG_RESUME));
-    drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 250, getMessage(MSG_SAVELEVEL));
-    drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 230, getMessage(MSG_PLAYLEVEL));
-    drawText(C_BLACK, DISPLAY_WIDTH/3, DISPLAY_HEIGHT - 210, getMessage(MSG_EXIT));
+    drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) - 30, getMessage(MSG_RESUME));
+    drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) - 10, getMessage(MSG_SAVELEVEL));
+    drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) + 10, getMessage(MSG_PLAYLEVEL));
+    drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) + 30, getMessage(MSG_EXIT));
     drawRectangle(
-        DISPLAY_WIDTH/3 - 12, DISPLAY_HEIGHT - 262 + cursor*20,
-        DISPLAY_WIDTH/3 -  4, DISPLAY_HEIGHT - 254 + cursor*20, C_BLACK, 1
+        DISPLAY_WIDTH/3 - 12, (DISPLAY_HEIGHT>>1) - 22 + cursor*20,
+        DISPLAY_WIDTH/3 -  4, (DISPLAY_HEIGHT>>1) - 14 + cursor*20, C_BLACK, 1
     );
 }

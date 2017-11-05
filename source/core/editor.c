@@ -119,6 +119,7 @@ static void editorDeleteAtPos(int x, int y) {
 void editorStart(levelmeta_t* meta) {
     undostack = initStack(STACK_SIZE, sizeof(action_t));
     redostack = initStack(STACK_SIZE, sizeof(action_t));
+    modified = 0;
     if (meta && loadLevelFile(meta->filename)) {
         currentlevel = *meta;
         hasfname = 1;
@@ -146,6 +147,8 @@ void editorSaveQuit() {
     }
 }
 
+#define CURSOR_HEIGHT   (DISPLAY_HEIGHT>>3)
+
 void updateLevelEditor() {
 #if !defined(_3DS) && !defined(__wiiu__)
     if (isKeyHeld(KEY_EXTRA)) {
@@ -159,6 +162,7 @@ void updateLevelEditor() {
         }
         // CTRL + O: open level
         if (isKeyDown(ALLEGRO_KEY_O)) {
+            editorSaveQuit();
             openUserLevelList(LISTMODE_LOAD);
         }
         // CTRL + Z: undo
@@ -194,10 +198,10 @@ void updateLevelEditor() {
     if (mouse_btn == MBT_LEFT) {
         if (isKeyHeld(KEY_EXTRA)) {
             editorDeleteAtPos(mouse_scx, mouse_scy);
-        } else if (getMouseX() >= DISPLAY_WIDTH-80) { // Tile/object bar
+        } else if (getMouseX() >= DISPLAY_WIDTH-(DISPLAY_WIDTH>>3)) { // Tile/object bar
             int i;
             for (i = 0; i < ENT_COUNT+TILE_COUNT; i++) {
-                if (rectangleCollision(getMouseX(), getMouseY(), 1, 1, DISPLAY_WIDTH-56, 40+i*48, 32, 32)) {
+                if (rectangleCollision(getMouseX(), getMouseY(), 1, 1, DISPLAY_WIDTH-(DISPLAY_WIDTH>>3), CURSOR_HEIGHT - 8 + i*CURSOR_HEIGHT, (DISPLAY_WIDTH>>3), CURSOR_HEIGHT)) {
                     if (i < TILE_COUNT) {
                         seltile = i+1;
                         tilemode = 1;
@@ -220,6 +224,7 @@ void editorCommitLevel() {
     if (!hasfname) makeFilename();
     saveLevel(&currentlevel);
     error(getMessage(MSG_LEVELSAVED), NULL);
+    modified = 0;
 }
 
 void editorPlayLevel() {
@@ -271,14 +276,14 @@ void drawLevelEditor() {
 
     drawRectangle(0, DISPLAY_HEIGHT - 24, 128, DISPLAY_HEIGHT, C_WHITE, 1);
     drawTextCenter(currentlevel.valid ? C_VALID : C_UNTESTED, 64, DISPLAY_HEIGHT - 24, getMessage(MSG_UNTESTED + currentlevel.valid));
-    drawRectangle(DISPLAY_WIDTH-80, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, C_WHITE, 1);
-    drawRectangle(DISPLAY_WIDTH-64, (DISPLAY_HEIGHT/12 - 8) + cursor*48, DISPLAY_WIDTH-16, (DISPLAY_HEIGHT/12 + 40) + cursor*48, RGBA8(255,0,0,255), 1);
+    drawRectangle(DISPLAY_WIDTH-(DISPLAY_WIDTH>>3), 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, C_WHITE, 1);
+    drawRectangle(DISPLAY_WIDTH-(DISPLAY_WIDTH>>4)-(CURSOR_HEIGHT>>1), (DISPLAY_HEIGHT/12 - 4) + cursor*CURSOR_HEIGHT, DISPLAY_WIDTH-(DISPLAY_WIDTH>>4)+(CURSOR_HEIGHT>>1), ((DISPLAY_HEIGHT/12) + CURSOR_HEIGHT - 4) + cursor*CURSOR_HEIGHT, RGBA8(255,0,0,255), 1);
 
     int i;
     for (i = 0; i < TILE_COUNT; i++) {
-        drawTile(i, DISPLAY_WIDTH-56, DISPLAY_HEIGHT/12 + i*48);
+        drawTile(i, DISPLAY_WIDTH-(DISPLAY_WIDTH>>4)-(CURSOR_HEIGHT>>1)+4, DISPLAY_HEIGHT/12 + i*CURSOR_HEIGHT);
     }
     for (i = TILE_COUNT; i < ENT_COUNT+TILE_COUNT; i++) {
-        drawSprite(i-TILE_COUNT, 0, DISPLAY_WIDTH-56, DISPLAY_HEIGHT/12 + i*48);
+        drawSprite(i-TILE_COUNT, 0, DISPLAY_WIDTH-(DISPLAY_WIDTH>>4)-(CURSOR_HEIGHT>>1)+4, DISPLAY_HEIGHT/12 + i*CURSOR_HEIGHT);
     }
 }
