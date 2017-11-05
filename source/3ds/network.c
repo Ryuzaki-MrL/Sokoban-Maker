@@ -5,6 +5,8 @@
 #include "network.h"
 #include "message.h"
 #include "input.h"
+#include "util.h"
+#include "sha1.h"
 
 typedef struct sString {
     char* buffer;
@@ -13,12 +15,17 @@ typedef struct sString {
 
 static httpcContext context;
 static u32 responsecode = 0;
+static string_t requestbody = { 0 };
 static string_t responsebody = { 0 };
-static char cookie[100] = { 0 };
+static char cookie[100] = "";
+static char boundary[50] = "----";
 
 static int writeCallback(string_t* out) {
     u32 readsize;
     Result ret;
+    if (!out->buffer) {
+        out->buffer = malloc(0x1000);
+    }
     do {
         ret = httpcDownloadData(&context, (u8*)out->buffer + out->size, 0x1000, &readsize);
         out->size += readsize;
@@ -52,11 +59,21 @@ void networkInit() {
 }
 
 void networkFini() {
+    free(requestbody.buffer);
+    free(responsebody.buffer);
     httpcCloseContext(&context);
     httpcExit();
 }
 
 void httpStartConnection(const char* url) {
+    free(requestbody.buffer);
+    free(responsebody.buffer);
+    memset(&requestbody, 0, sizeof(requestbody));
+    memset(&responsebody, 0, sizeof(responsebody));
+    requestbody.buffer = calloc(1, 0x400);
+    u32 curtime = osGetTime();
+    SHA1(boundary+4, (const char*)&curtime, sizeof(u32));
+    strhex(boundary+4, boundary+4, 20);
     httpcOpenContext(&context, HTTPC_METHOD_POST, url, 0);
 }
 
@@ -65,22 +82,35 @@ void httpAddRequestHeader(const char* name, const char* value) {
 }
 
 void httpAddPostFieldText(const char* name, const char* value) {
-    httpcAddPostDataAscii(&context, name, value);
+    snprintf(
+        requestbody.buffer + requestbody.size, 0x3FF - requestbody.size,
+        "%s\r\nContent-Disposition: form-data; name=\"%s\"\r\n\r\n%s\r\n",
+        boundary, name, value
+    );
+    requestbody.size += strlen(requestbody.buffer + requestbody.size);
 }
 
 const char* httpPost() {
     httpcSetKeepAlive(&context, HTTPC_KEEPALIVE_ENABLED);
 
-    httpcAddRequestHeaderField(&context, "Content-Type", "multipart/form-data");
+    char tmp[81];
+    snprintf(tmp, sizeof(tmp)-1, "multipart/form-data, boundary=%s", boundary+2);
+
+    httpcAddRequestHeaderField(&context, "Content-Type", tmp);
     httpcAddRequestHeaderField(&context, "Accept-Language", getLangString());
     httpcAddRequestHeaderField(&context, "User-Agent", "SokobanMaker");
     httpcAddRequestHeaderField(&context, "Connection", "Keep-Alive");
     httpcAddRequestHeaderField(&context, "Cookie", cookie);
 
+    char* buf = requestbody.buffer + requestbody.size;
+    sprintf(buf, "%s--\r\n", boundary);
+    httpcAddPostDataRaw(&context, (const u32*)requestbody.buffer, strlen(buf) + requestbody.size);
+
     Result res = httpcBeginRequest(&context);
     if (res != 0) return NULL;
 
-    httpGetResponseHeader("Set-Cookie", cookie, sizeof(cookie));
+    httpcGetResponseHeader(&context, "Set-Cookie", tmp, sizeof(tmp));
+    if (tmp[0]) strcpy(cookie, tmp);
     httpcGetResponseStatusCode(&context, &responsecode);
 
     if (writeCallback(&responsebody))
@@ -150,11 +180,19 @@ const char* uploadFile(const char* url, const char* path) {
     size_t fsize = ftell(file);
     rewind(file);
 
-    u8* buf = (u8*)calloc(1, fsize);
-    fread(buf, 1, fsize, file);
+    u8* buf = (u8*)calloc(1, 0x400 + fsize);
+    if (!buf) return NULL;
+
+    snprintf((char*)buf, 0x3FF, "%s\r\nContent-Disposition: form-data; name=\"upfile\"; filename=\"upfile\"\r\n\r\n", boundary);
+    size_t postsize = strlen((const char*)buf);
+    postsize += fread(buf + postsize, 1, fsize, file);
     fclose(file);
 
-    httpcAddPostDataBinary(&context, "upfile", buf, fsize);
+    buf[postsize++] = '\r';
+    buf[postsize++] = '\n';
+    sprintf((char*)buf + postsize, "%s--\r\n", boundary);
+    postsize += strlen((const char*)buf + postsize);
+    httpcAddPostDataRaw(&context, (const u32*)buf, postsize);
     const char* res = httpPost();
 
     httpEndConnection();

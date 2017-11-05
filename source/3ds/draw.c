@@ -6,11 +6,14 @@
 #include "input.h"
 #include "state.h"
 
+#define FONT_SIZE   0.5
+#define FONT_YOFF   4
+
 //static int font = 1000;
-static int logo = 1001;
-static int tileset = 1002;
-static int background = 1003;
-static int grid = 1004;
+static int logo = SPRITE_COUNT + 1;
+static int tileset = SPRITE_COUNT + 2;
+static int background = SPRITE_COUNT + 3;
+static int grid = SPRITE_COUNT + 4;
 
 void drawInit() {
     pp2d_init();
@@ -28,13 +31,14 @@ void drawFini() {
 }
 
 void drawClearColor(Color color) {
-    pp2d_set_screen_color(GFX_TOP, color);
-    pp2d_set_screen_color(GFX_BOTTOM, color);
+    Color c = ABGR8((color>>24)&0xFF, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
+    pp2d_set_screen_color(GFX_TOP, c);
+    pp2d_set_screen_color(GFX_BOTTOM, c);
 }
 
 void drawBackground() {
-    pp2d_set_screen_color(GFX_TOP, RGBA8(0xC0, 0xC0, 0xC0, 0xFF));
-    pp2d_set_screen_color(GFX_BOTTOM, RGBA8(0xC0, 0xC0, 0xC0, 0xFF));
+    pp2d_set_screen_color(GFX_TOP, ABGR8(0xFF, 0xC0, 0xC0, 0xC0));
+    pp2d_set_screen_color(GFX_BOTTOM, ABGR8(0xFF, 0xC0, 0xC0, 0xC0));
 }
 
 void drawLogo() {
@@ -42,7 +46,7 @@ void drawLogo() {
 }
 
 void drawText(Color color, int x, int y, const char* str) {
-    pp2d_draw_text(x, y, 1, 1, color, str);
+    pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, str);
 }
 
 void drawTextFormat(Color color, int x, int y, const char* str, ...) {
@@ -50,19 +54,20 @@ void drawTextFormat(Color color, int x, int y, const char* str, ...) {
     va_list valist;
     va_start(valist, str);
     vsnprintf(buffer, 255, str, valist);
-    pp2d_draw_text(x, y, 1, 1, color, buffer);
+    pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, buffer);
     va_end(valist);
 }
 
 void drawTextCenter(Color color, int x, int y, const char* str) {
-    pp2d_draw_text_center(GFX_TOP, y, 1, 1, color, str);
+    x -= ((int)pp2d_get_text_width(str, FONT_SIZE, FONT_SIZE) >> 1);
+    pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, str);
 }
 
 void drawTextMultiline(Color color, int x, int y, int w, int centre, const char* str) {
     if (centre) {
-        pp2d_draw_text_center(GFX_TOP, y, 1, 1, color, str);
+        drawTextCenter(color, x, y, str);
     } else {
-        pp2d_draw_text_wrap(x, y, 1, 1, color, w, str);
+        pp2d_draw_text_wrap(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, w, str);
     }
 }
 
@@ -72,11 +77,15 @@ void drawRectangle(int x1, int y1, int x2, int y2, Color color, int fill) {
 }
 
 void drawTile(int tile, int x, int y) {
-    pp2d_draw_texture_part(tileset, x, y, tile<<5, 0, 32, 32);
+    pp2d_texture_select_part(tileset, x, y, tile<<5, 0, 32, 32);
+    pp2d_texture_scale(0.75, 0.75);
+    pp2d_texture_draw();
 }
 
 void drawSprite(int sprite, int frame, int x, int y) {
-    pp2d_draw_texture_part(sprite, x, y, frame<<5, 0, 32, 32);
+    pp2d_texture_select_part(sprite, x, y, frame<<5, 0, 32, 32);
+    pp2d_texture_scale(0.75, 0.75);
+    pp2d_texture_draw();
 }
 
 static void drawTilemap() {
@@ -127,7 +136,10 @@ void drawLevel() {
 }
 
 void draw() {
-    pp2d_begin_draw((state==ST_EDITOR) ? GFX_BOTTOM : GFX_TOP, GFX_LEFT);
+    pp2d_begin_draw(GFX_TOP, GFX_LEFT);
+    if (state == ST_EDITOR) {
+        pp2d_draw_on(GFX_BOTTOM, GFX_LEFT);
+    }
     switch(state) {
         case ST_PAUSE: drawPauseMenu(); break;
         case ST_TITLE: drawTitleScreen(); break;

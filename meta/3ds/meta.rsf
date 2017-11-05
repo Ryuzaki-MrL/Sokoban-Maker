@@ -1,14 +1,14 @@
 BasicInfo:
   Title                   : "Sokomaker"
-  ProductCode             : "CTR-HB-SKMK"
-  Logo                    : Nintendo # Nintendo / Licensed / Distributed / iQue / iQueForSystem
+  ProductCode             : $(APP_PRODUCT_CODE)
+  Logo                    : Homebrew # Nintendo / Licensed / Distributed / iQue / iQueForSystem
 
 RomFs:
-  $(ROMFS)
+  RootPath                : $(APP_ROMFS)
 
 TitleInfo:
   Category                : Application
-  UniqueId                : 0xF4948
+  UniqueId                : $(APP_UNIQUE_ID)
 
 Option:
   UseOnSD                 : true # true if App is to be installed to SD
@@ -67,7 +67,7 @@ AccessControlInfo:
 
   # Process Settings
   MemoryType                    : Application # Application/System/Base
-  SystemMode                    : 80MB # 64MB(Default)/96MB/80MB/72MB/32MB
+  SystemMode                    : 64MB # 64MB(Default)/96MB/80MB/72MB/32MB
   IdealProcessor                : 0
   AffinityMask                  : 1
   Priority                      : 16

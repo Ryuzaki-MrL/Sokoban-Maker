@@ -5,7 +5,7 @@
 #include "sprite.h"
 
 #ifdef _3DS
-    #define DISPLAY_WIDTH 400
+    #define DISPLAY_WIDTH 320
     #define DISPLAY_HEIGHT 240
     void drawGridAux(int dx, int dy);
     typedef u32 Color;
