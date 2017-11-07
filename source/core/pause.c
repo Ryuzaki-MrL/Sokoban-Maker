@@ -22,7 +22,7 @@ void updatePauseMenu() {
 
 void drawPauseMenu() {
     drawBackground();
-    drawRectangle(80, 80, DISPLAY_WIDTH - 80, DISPLAY_HEIGHT - 80, RGBA8(255,255,255,220), 1);
+    drawRectangle(DISPLAY_WIDTH>>3, DISPLAY_HEIGHT/6, DISPLAY_WIDTH - (DISPLAY_WIDTH>>3), DISPLAY_HEIGHT - (DISPLAY_HEIGHT/6), RGBA8(255,255,255,220), 1);
     drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) - 30, getMessage(MSG_RESUME));
     drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) - 10, getMessage(MSG_SAVELEVEL));
     drawText(C_BLACK, DISPLAY_WIDTH/3, (DISPLAY_HEIGHT>>1) + 10, getMessage(MSG_PLAYLEVEL));

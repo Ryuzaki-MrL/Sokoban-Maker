@@ -19,7 +19,7 @@ void inputPasswordCallback(const char* password) {
 
 void inputUsernameCallback(const char* username) {
     httpAddPostFieldText("user", username[0] ? username : "guest");
-    getUserInput(20, getMessage(MSG_PASSWORD), inputPasswordCallback);
+    getUserInput(20, getMessage(MSG_PASSWORD), 1, inputPasswordCallback);
 }
 
 void updateTitleScreen() {
@@ -42,7 +42,7 @@ void updateTitleScreen() {
             }
             case 2: { // Online Levels
                 httpStartConnection(URL_ROOT"users/login.php");
-                getUserInput(20, getMessage(MSG_USERNAME), inputUsernameCallback);
+                getUserInput(20, getMessage(MSG_USERNAME), 0, inputUsernameCallback);
                 break;
             }
             case 3: { // Language

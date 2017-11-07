@@ -25,7 +25,7 @@ int getMouseButton();
 int getMouseX();
 int getMouseY();
 
-void getUserInput(int size, const char* caption, icb callback);
+void getUserInput(int size, const char* caption, int password, icb callback);
 
 void updateUserInput();
 void drawUserInput();

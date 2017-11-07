@@ -19,6 +19,7 @@ static char msgcaption[260] = "";
 static char userinput[260] = "";
 static int inputpos = 0;
 static int inputmax = 0;
+static int ispassword = 0;
 static icb inputclb = NULL;
 
 static int redraw = 2;
@@ -107,7 +108,7 @@ int getMouseY() {
     return mouse_y;
 }
 
-void getUserInput(int size, const char* caption, icb callback) {
+void getUserInput(int size, const char* caption, int password, icb callback) {
     if (!caption) return;
     memset(userinput, 0, sizeof(userinput));
     inputpos = 0;
@@ -116,6 +117,7 @@ void getUserInput(int size, const char* caption, icb callback) {
     redraw = 2;
     strncpy(msgcaption, caption, sizeof(msgcaption)-1);
     hud = H_INPUT;
+    ispassword = password;
     inputclb = callback;
 }
 
@@ -195,7 +197,13 @@ void drawUserInput() {
     drawRectangle(ENTRY_X1, ENTRY_Y1, ENTRY_X2, ENTRY_Y2, RGBA8(220,220,220,255), 1);
     drawRectangle(ENTRY_X1 + 24, ENTRY_Y1 + 64, ENTRY_X2 - 24, ENTRY_Y1 + 104, C_WHITE, 1);
     drawTextCenter(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 16, msgcaption);
-    drawTextCenter(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 64 + 12, userinput);
+    if (ispassword) {
+        char tmp[260] = "";
+        memset(tmp, '*', inputpos);
+        drawTextCenter(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 64 + 12, tmp);
+    } else {
+        drawTextCenter(RGBA8(16, 16, 16, 255), (DISPLAY_WIDTH>>1), ENTRY_Y1 + 64 + 12, userinput);
+    }
 
     if (!redraw) return;
 

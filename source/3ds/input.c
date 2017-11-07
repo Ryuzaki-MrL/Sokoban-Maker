@@ -44,12 +44,13 @@ int getMouseY() {
     return touch.py;
 }
 
-void getUserInput(int size, const char* caption, icb callback) {
+void getUserInput(int size, const char* caption, int password, icb callback) {
     char buffer[size+1];
     SwkbdState kb;
 
     swkbdInit(&kb, SWKBD_TYPE_QWERTY, 2, size);
     swkbdSetHintText(&kb, caption);
+    swkbdSetPasswordMode(&kb, password);
     swkbdSetButton(&kb, SWKBD_BUTTON_LEFT, getMessage(MSG_CANCEL), 0);
     swkbdSetButton(&kb, SWKBD_BUTTON_RIGHT, getMessage(MSG_CONFIRM), 1);
     swkbdSetValidation(&kb, SWKBD_NOTEMPTY_NOTBLANK, 0, 0);

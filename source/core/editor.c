@@ -61,7 +61,7 @@ static void inputAuthorCallback(const char* author) {
 
 static void inputTitleCallback(const char* title) {
     strcpy(currentlevel.title, title);
-    getUserInput(sizeof(currentlevel.author)-1, getMessage(MSG_AUTHOR), inputAuthorCallback);
+    getUserInput(sizeof(currentlevel.author)-1, getMessage(MSG_AUTHOR), 0, inputAuthorCallback);
 }
 
 // Gera um nome de arquivo a partir do SHA1 do nível
@@ -127,7 +127,7 @@ void editorStart(levelmeta_t* meta) {
     } else {
         newLevel();
         memset(&currentlevel, 0, sizeof(currentlevel));
-        getUserInput(sizeof(currentlevel.title)-1, getMessage(MSG_TITLE), inputTitleCallback);
+        getUserInput(sizeof(currentlevel.title)-1, getMessage(MSG_TITLE), 0, inputTitleCallback);
     }
 }
 
