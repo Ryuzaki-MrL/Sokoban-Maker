@@ -8,6 +8,8 @@
 #include "util.h"
 #include "sha1.h"
 
+#define TIMEOUT 10000000000
+
 typedef struct sString {
     char* buffer;
     size_t size;
@@ -20,6 +22,34 @@ static string_t responsebody = { 0 };
 static char cookie[100] = "";
 static char boundary[50] = "----";
 
+static Result httpcDownloadDataTimeout(httpcContext* context, u8* buffer, u32 size, u32* downloadedsize) {
+    Result ret = 0;
+    Result dlret = HTTPC_RESULTCODE_DOWNLOADPENDING;
+    u32 pos = 0, sz = 0;
+    u32 dlstartpos = 0;
+    u32 dlpos = 0;
+
+    if (downloadedsize) *downloadedsize = 0;
+
+    ret = httpcGetDownloadSizeState(context, &dlstartpos, NULL);
+    if (R_FAILED(ret)) return ret;
+
+    while(pos < size && dlret == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING) {
+        sz = size - pos;
+
+        dlret = httpcReceiveDataTimeout(context, &buffer[pos], sz, TIMEOUT);
+
+        ret = httpcGetDownloadSizeState(context, &dlpos, NULL);
+        if (R_FAILED(ret)) return ret;
+
+        pos = dlpos - dlstartpos;
+    }
+
+    if (downloadedsize) *downloadedsize = pos;
+
+    return dlret;
+}
+
 static int writeCallback(string_t* out) {
     u32 readsize;
     Result ret;
@@ -27,7 +57,7 @@ static int writeCallback(string_t* out) {
         out->buffer = malloc(0x1000);
     }
     do {
-        ret = httpcDownloadData(&context, (u8*)out->buffer + out->size, 0x1000, &readsize);
+        ret = httpcDownloadDataTimeout(&context, (u8*)out->buffer + out->size, 0x1000, &readsize);
         out->size += readsize;
         if (ret == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING) {
             char* lastbuf = out->buffer;
@@ -42,13 +72,11 @@ static int writeCallback(string_t* out) {
 }
 
 static int writeCallbackFile(FILE* out) {
-    //u32 len;
-    //httpcGetDownloadSizeState(&context, NULL, &len);
     u32 readsize;
     u8 buf[0x1000];
     Result ret;
     do {
-        ret = httpcDownloadData(&context, buf, 0x1000, &readsize);
+        ret = httpcDownloadDataTimeout(&context, buf, 0x1000, &readsize);
         fwrite(buf, 1, readsize, out);
     } while (ret == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING);
     return 1;
@@ -90,6 +118,33 @@ void httpAddPostFieldText(const char* name, const char* value) {
     requestbody.size += strlen(requestbody.buffer + requestbody.size);
 }
 
+static void httpAddPostFieldFile(const char* name, const char* filename) {
+    FILE* file = fopen(filename, "rb");
+    if (!file) return;
+
+    fseek(file, 0, SEEK_END);
+    size_t fsize = ftell(file);
+    rewind(file);
+
+    requestbody.buffer = realloc(requestbody.buffer, 0x400 + fsize);
+    if (!requestbody.buffer) return;
+
+    snprintf(
+        requestbody.buffer + requestbody.size, 0x3FF - requestbody.size,
+        "%s\r\nContent-Disposition: form-data; name=\"%s\"; filename=\"upfile\"\r\n\r\n",
+        boundary, name
+    );
+    requestbody.size += strlen(requestbody.buffer + requestbody.size);
+
+    requestbody.size += fread(requestbody.buffer + requestbody.size, 1, fsize, file);
+    fclose(file);
+
+    requestbody.buffer[requestbody.size++] = '\r';
+    requestbody.buffer[requestbody.size++] = '\n';
+    sprintf(requestbody.buffer + requestbody.size, "%s--\r\n", boundary);
+    requestbody.size += strlen(requestbody.buffer + requestbody.size);
+}
+
 const char* httpPost() {
     httpcSetKeepAlive(&context, HTTPC_KEEPALIVE_ENABLED);
 
@@ -106,15 +161,18 @@ const char* httpPost() {
     sprintf(buf, "%s--\r\n", boundary);
     httpcAddPostDataRaw(&context, (const u32*)requestbody.buffer, strlen(buf) + requestbody.size);
 
-    Result res = httpcBeginRequest(&context);
-    if (res != 0) return NULL;
+    if (R_FAILED(httpcBeginRequest(&context)))
+        return NULL;
 
     httpcGetResponseHeader(&context, "Set-Cookie", tmp, sizeof(tmp));
     if (tmp[0]) strcpy(cookie, tmp);
-    httpcGetResponseStatusCode(&context, &responsecode);
+
+    if (R_FAILED(httpcGetResponseStatusCodeTimeout(&context, &responsecode, TIMEOUT)))
+        return NULL;
 
     if (writeCallback(&responsebody))
         return responsebody.buffer;
+
     return NULL;
 }
 
@@ -173,29 +231,9 @@ int downloadFile(const char* url, const char* path) {
 const char* uploadFile(const char* url, const char* path) {
     httpStartConnection(url);
 
-    FILE* file = fopen(path, "rb");
-    if (!file) return NULL;
-
-    fseek(file, 0, SEEK_END);
-    size_t fsize = ftell(file);
-    rewind(file);
-
-    u8* buf = (u8*)calloc(1, 0x400 + fsize);
-    if (!buf) return NULL;
-
-    snprintf((char*)buf, 0x3FF, "%s\r\nContent-Disposition: form-data; name=\"upfile\"; filename=\"upfile\"\r\n\r\n", boundary);
-    size_t postsize = strlen((const char*)buf);
-    postsize += fread(buf + postsize, 1, fsize, file);
-    fclose(file);
-
-    buf[postsize++] = '\r';
-    buf[postsize++] = '\n';
-    sprintf((char*)buf + postsize, "%s--\r\n", boundary);
-    postsize += strlen((const char*)buf + postsize);
-    httpcAddPostDataRaw(&context, (const u32*)buf, postsize);
+    httpAddPostFieldFile("upfile", path);
     const char* res = httpPost();
 
     httpEndConnection();
-    free(buf);
     return res;
 }
