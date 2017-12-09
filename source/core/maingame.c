@@ -4,8 +4,9 @@
 
 static void updateEntityAux(void* data) {
     entity_t* ent = (entity_t*)data;
+    if (!ent) return;
     const sprite_t* spr = getSprite(ent->sprite);
-    if (!ent || !spr) return;
+    if (!spr) return;
 
     if (ent->moving) {
         ent->x += ent->xdir * ent->speed;
@@ -13,7 +14,6 @@ static void updateEntityAux(void* data) {
 
         if (IS_SNAPPED(ent->x, ent->y)) {
             ent->moving = 0;
-
             switch(TILE_GET(ent->x, ent->y)) {
                 case TL_HOLE: {
                     ent->visible = 0;
@@ -46,7 +46,7 @@ static void updateEntityAux(void* data) {
             }
         }
     }
-    ent->frame += ent->anispd;
+    //ent->frame += ent->anispd;
 }
 
 static void updateEntities() {
