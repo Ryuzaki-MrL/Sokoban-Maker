@@ -68,7 +68,7 @@ static int writeCallback(string_t* out) {
             }
         }
     } while (ret == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING);
-    return 1;
+    return (R_SUCCEEDED(ret));
 }
 
 static int writeCallbackFile(FILE* out) {
@@ -79,7 +79,7 @@ static int writeCallbackFile(FILE* out) {
         ret = httpcDownloadDataTimeout(&context, buf, 0x1000, &readsize);
         fwrite(buf, 1, readsize, out);
     } while (ret == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING);
-    return 1;
+    return (R_SUCCEEDED(ret));
 }
 
 void networkInit() {
@@ -89,6 +89,7 @@ void networkInit() {
 void networkFini() {
     free(requestbody.buffer);
     free(responsebody.buffer);
+    httpcCancelConnection(&context);
     httpcCloseContext(&context);
     httpcExit();
 }
@@ -187,6 +188,7 @@ int httpGetResponseCode() {
 }
 
 void httpEndConnection() {
+    httpcCancelConnection(&context);
     httpcCloseContext(&context);
 }
 
