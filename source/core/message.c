@@ -46,7 +46,9 @@ static const char* messages[LANGCOUNT][1000] = {
         "Salvar alterações do nível?",
         "Deletar nível selecionado?",
         "NÃO TESTADO",
-        "VÁLIDO"
+        "VÁLIDO",
+        "NÃO TESTADO*",
+        "VÁLIDO*"
     }, {
         "New Game",
         "Continue",
@@ -84,7 +86,9 @@ static const char* messages[LANGCOUNT][1000] = {
         "Save changes?",
         "Delete selected level?",
         "UNTESTED",
-        "VALID"
+        "VALID",
+        "UNTESTED*",
+        "VALID*"
     }
 };
 static const char* nullmsg = "NULL";

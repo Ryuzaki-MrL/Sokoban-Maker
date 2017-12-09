@@ -86,6 +86,7 @@ int getEntityCount(int id) {
 void entitySaveState() {
     int i;
     for (i = 1; i < ENT_COUNT; i++) {
+        clearList(entitiestmp+i);
         copyList(entities+i, entitiestmp+i, sizeof(entity_t));
     }
 }
@@ -93,6 +94,7 @@ void entitySaveState() {
 void entityLoadState() {
     int i;
     for (i = 1; i < ENT_COUNT; i++) {
+        clearList(entities+i);
         copyList(entitiestmp+i, entities+i, sizeof(entity_t));
     }
 }

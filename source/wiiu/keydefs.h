@@ -12,5 +12,10 @@
 #define KEY_X       (VPAD_BUTTON_X)
 #define KEY_EXTRA   (VPAD_BUTTON_ZL|VPAD_BUTTON_ZR)
 #define KEY_DELETE  (VPAD_BUTTON_X)
+#define KEY_UNDO    (VPAD_BUTTON_X)
+#define KEY_REDO    (VPAD_BUTTON_Y)
+#define KEY_OPEN    (VPAD_BUTTON_B)
+#define KEY_SAVE    (VPAD_BUTTON_A)
+#define KEY_GRID    0
 
 #endif // KEYDEFS_H

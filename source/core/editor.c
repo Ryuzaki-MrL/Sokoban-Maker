@@ -11,7 +11,7 @@
 #include "util.h"
 
 #define CAMSPEED 16
-#define STACK_SIZE 21
+#define STACK_SIZE 100
 
 static stack_t* undostack = NULL;
 static stack_t* redostack = NULL;
@@ -29,29 +29,78 @@ static int cursor = 0;
 static int seltile = TL_WALL;
 static int selent = ENT_BOX;
 
-typedef void(*act)(void*);
+typedef void(*act)(int, int, int);
 
 typedef struct sAction {
     act action;
-    int args[3];
+    int arg0;
+    int arg1;
+    int arg2;
+    int wasmod;
+    int wasvalid;
 } action_t;
-/*
-static void actionEntityAdd(int args[]) {
-    entityAdd(args[0], args[1], args[2]);
+
+static void actionEntityAdd(int x, int y, int id);
+static void revertEntityAdd(int x, int y, int id);
+static void actionEntityDestroy(int x, int y, int id);
+static void revertEntityDestroy(int x, int y, int id);
+static void actionTilePut(int x, int y, int tile);
+static void revertTilePut(int x, int y, int tile);
+static void actionResetRobot(int x, int y, int check);
+static void revertResetRobot(int x, int y, int check);
+
+static void undoAdd(act action, int arg0, int arg1, int arg2) {
+    if (!undostack || !redostack) return;
+    action_t a = {action, arg0, arg1, arg2, modified, currentlevel.valid};
+    push(undostack, &a);
 }
 
-static void actionEntityDestroy(int args[]) {
-    entityDestroy(args[0]);
+static void redoAdd(act action, int arg0, int arg1, int arg2) {
+    if (!redostack || !undostack) return;
+    action_t a = {action, arg0, arg1, arg2, modified, currentlevel.valid};
+    push(redostack, &a);
 }
 
-static void actionTileSet(int args[]) {
-    TILE_SET(args[0], args[1], args[2]);
+static void actionEntityAdd(int x, int y, int id) {
+    entityAdd(x, y, id);
+    undoAdd(revertEntityAdd, x, y, id);
 }
 
-static void actionResetRobot(int args[]) {
-    resetRobot(args[0], args[1]);
+static void revertEntityAdd(int x, int y, int id) {
+    entityDestroyPos(x, y, 1, 1, id);
+    redoAdd(actionEntityAdd, x, y, id);
 }
-*/
+
+static void actionEntityDestroy(int x, int y, int id) {
+    entityDestroyPos(x, y, 1, 1, id);
+    undoAdd(revertEntityDestroy, x, y, id);
+}
+
+static void revertEntityDestroy(int x, int y, int id) {
+    entityAdd(x, y, id);
+    redoAdd(actionEntityDestroy, x, y, id);
+}
+
+static void actionTilePut(int x, int y, int tile) {
+    undoAdd(revertTilePut, x, y, TILE_GET(x, y));
+    TILE_SET(x, y, tile);
+}
+
+static void revertTilePut(int x, int y, int tile) {
+    redoAdd(actionTilePut, x, y, TILE_GET(x, y));
+    TILE_SET(x, y, tile);
+}
+
+static void actionResetRobot(int x, int y, int check) {
+    undoAdd(revertResetRobot, getRobotX(), getRobotY(), 0);
+    resetRobot(x, y);
+}
+
+static void revertResetRobot(int x, int y, int check) {
+    redoAdd(actionResetRobot, getRobotX(), getRobotY(), 0);
+    resetRobot(x, y);
+}
+
 static void inputAuthorCallback(const char* author) {
     strcpy(currentlevel.author, author);
     hasfname = 0;
@@ -64,7 +113,6 @@ static void inputTitleCallback(const char* title) {
     getUserInput(sizeof(currentlevel.author)-1, getMessage(MSG_AUTHOR), 0, inputAuthorCallback);
 }
 
-// Gera um nome de arquivo a partir do SHA1 do nível
 static void makeFilename() {
     currentlevel.ctime = time(NULL);
     currentlevel.hrand = rand();
@@ -72,48 +120,52 @@ static void makeFilename() {
     strhex(currentlevel.filename, currentlevel.filename, 20);
     hasfname = 1;
 }
-/*
-static void undoAdd(act action, int args[]) {
-    if (!undostack || !redostack) return;
-}
-
-static void redoAdd(act action, int args[]) {
-    if (!redostack || !undostack) return;
-}
 
 static void undo() {
-    
+    if (!undostack) return;
+    action_t a;
+    if (pop(undostack, &a)) {
+        a.action(a.arg0, a.arg1, a.arg2);
+        modified = a.wasmod;
+        currentlevel.valid = a.wasvalid;
+    }
 }
 
 static void redo() {
-    
-}
-*/
-static void editorAddAtPos(int x, int y) {
-    modified = 1;
-    currentlevel.valid = 0;
-    if (tilemode) {
-        TILE_SET(x, y, seltile);
-    } else {
-        if (selent == ENT_ROBOT) {
-            resetRobot((x>>5)<<5, (y>>5)<<5);
-        } else {
-            if (selent == ENT_BOX)
-                level.boxes++;
-            entityAdd((x>>5)<<5, (y>>5)<<5, selent);
-        }
+    if (!redostack) return;
+    action_t a;
+    if (pop(redostack, &a)) {
+        a.action(a.arg0, a.arg1, a.arg2);
+        modified = a.wasmod;
+        currentlevel.valid = a.wasvalid;
     }
 }
 
-static void editorDeleteAtPos(int x, int y) {
+static void editorAddAtPos(int x, int y) {
+    if (tilemode) {
+        actionTilePut(x, y, seltile);
+    } else {
+        if (selent == ENT_ROBOT) {
+            actionResetRobot((x>>5)<<5, (y>>5)<<5, 0);
+        } else {
+            actionEntityAdd((x>>5)<<5, (y>>5)<<5, selent);
+        }
+    }
+    clearStack(redostack);
     modified = 1;
     currentlevel.valid = 0;
+}
+
+static void editorDeleteAtPos(int x, int y) {
     entity_t* ent = entityCollision(x, y, 1, 1, ENT_BOX);
-    if (ent && entityDestroyPos(x, y, 1, 1, ent->id)) {
-        level.boxes--;
+    if (ent) {
+        actionEntityDestroy((x>>5)<<5, (y>>5)<<5, ent->id);
     } else {
-        TILE_SET(x, y, 0);
+        actionTilePut(x, y, 0);
     }
+    clearStack(redostack);
+    modified = 1;
+    currentlevel.valid = 0;
 }
 
 void editorStart(levelmeta_t* meta) {
@@ -150,40 +202,43 @@ void editorSaveQuit() {
 #define CURSOR_HEIGHT   (DISPLAY_HEIGHT>>3)
 
 void updateLevelEditor() {
-#if !defined(_3DS) && !defined(__wiiu__)
     if (isKeyHeld(KEY_EXTRA)) {
         // CTRL + G: toggle grid
-        if (isKeyDown(ALLEGRO_KEY_G)) {
+        if (isKeyDown(KEY_GRID)) {
             showgrid ^= 1;
         }
         // CTRL + S: save level
-        if (isKeyDown(ALLEGRO_KEY_S)) {
+        if (isKeyDown(KEY_SAVE)) {
             editorCommitLevel();
         }
         // CTRL + O: open level
-        if (isKeyDown(ALLEGRO_KEY_O)) {
+        if (isKeyDown(KEY_OPEN)) {
             editorSaveQuit();
             openUserLevelList(LISTMODE_LOAD);
         }
         // CTRL + Z: undo
-        if (isKeyDown(ALLEGRO_KEY_Z)) {
-            //undo();
+        if (isKeyDown(KEY_UNDO)) {
+            undo();
         }
         // CTRL + Y: redo
-        if (isKeyDown(ALLEGRO_KEY_Y)) {
-            //redo();
+        if (isKeyDown(KEY_REDO)) {
+            redo();
         }
-    } else
-#else
-    if (isKeyDown(KEY_X)) {
+    }
+#if defined(_3DS) || defined(__wiiu__)
+    else if (isKeyDown(KEY_X)) {
         showgrid ^= 1;
     }
 #endif
-    {
-        if (isKeyHeld(KEY_DOWN) && (level.cam.scy+CAMSPEED < (TILE_ROW<<5)-DISPLAY_HEIGHT)) level.cam.scy += CAMSPEED;
-        else if (isKeyHeld(KEY_UP) && (level.cam.scy-CAMSPEED >= 0)) level.cam.scy -= CAMSPEED;
-        if (isKeyHeld(KEY_RIGHT) && (level.cam.scx+CAMSPEED < (TILE_ROW<<5)-DISPLAY_WIDTH)) level.cam.scx += CAMSPEED;
-        else if (isKeyHeld(KEY_LEFT) && (level.cam.scx-CAMSPEED >= 0)) level.cam.scx -= CAMSPEED;
+    if (isKeyHeld(KEY_DOWN) && (level.cam.scy+CAMSPEED < (TILE_ROW<<5)-DISPLAY_HEIGHT)) {
+        level.cam.scy += CAMSPEED;
+    } else if (isKeyHeld(KEY_UP) && (level.cam.scy-CAMSPEED >= 0)) {
+        level.cam.scy -= CAMSPEED;
+    }
+    if (isKeyHeld(KEY_RIGHT) && (level.cam.scx+CAMSPEED < (TILE_ROW<<5)-DISPLAY_WIDTH)) {
+        level.cam.scx += CAMSPEED;
+    } else if (isKeyHeld(KEY_LEFT) && (level.cam.scx-CAMSPEED >= 0)) {
+        level.cam.scx -= CAMSPEED;
     }
 
     // Menu
@@ -228,10 +283,11 @@ void editorCommitLevel() {
 }
 
 void editorPlayLevel() {
+    level.boxes = getEntityCount(ENT_BOX);
     entitySaveState();
     rx = getRobotX();
     ry = getRobotY();
-    state = (ST_MAIN);
+    state = ST_MAIN;
 }
 
 void editorStopLevel() {
@@ -239,7 +295,6 @@ void editorStopLevel() {
     resetRobot(rx, ry);
     level.cam.scx = (getRobotX() <  (DISPLAY_WIDTH>>1)) ? 0 : getRobotX() - (DISPLAY_WIDTH>>1);
     level.cam.scy = (getRobotY() < (DISPLAY_HEIGHT>>1)) ? 0 : getRobotY() - (DISPLAY_HEIGHT>>1);
-    level.boxes = getEntityCount(ENT_BOX);
     state = ST_EDITOR;
 }
 
@@ -275,7 +330,10 @@ void drawLevelEditor() {
     if (showgrid) drawGrid();
 
     drawRectangle(0, DISPLAY_HEIGHT - 24, 128, DISPLAY_HEIGHT, C_WHITE, 1);
-    drawTextCenter(currentlevel.valid ? C_VALID : C_UNTESTED, 64, DISPLAY_HEIGHT - 24, getMessage(MSG_UNTESTED + currentlevel.valid));
+#ifdef DEBUG
+    drawTextFormat(C_BLACK, 0, 0, "Undo: %d/%d / Redo: %d/%d", getStackTop(undostack), getStackBottom(undostack), getStackTop(redostack), getStackBottom(redostack));
+#endif
+    drawTextCenter(currentlevel.valid ? C_VALID : C_UNTESTED, 64, DISPLAY_HEIGHT - 24, getMessage(modified ? (MSG_UNTESTEDM + currentlevel.valid) : (MSG_UNTESTED + currentlevel.valid)));
     drawRectangle(DISPLAY_WIDTH-(DISPLAY_WIDTH>>3), 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, C_WHITE, 1);
     drawRectangle(DISPLAY_WIDTH-(DISPLAY_WIDTH>>4)-(CURSOR_HEIGHT>>1), (DISPLAY_HEIGHT/12 - 4) + cursor*CURSOR_HEIGHT, DISPLAY_WIDTH-(DISPLAY_WIDTH>>4)+(CURSOR_HEIGHT>>1), ((DISPLAY_HEIGHT/12) + CURSOR_HEIGHT - 4) + cursor*CURSOR_HEIGHT, RGBA8(255,0,0,255), 1);
 

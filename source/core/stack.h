@@ -8,6 +8,8 @@ typedef struct sStack stack_t;
 stack_t* initStack(size_t size, size_t datasize);
 
 size_t getStackSize(stack_t* stack);
+int getStackTop(stack_t* stack);
+int getStackBottom(stack_t* stack);
 
 int push(stack_t* stack, void* data);
 int pop(stack_t* stack, void* out);
