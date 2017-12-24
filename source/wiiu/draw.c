@@ -265,8 +265,8 @@ void drawClearColor(Color color) {
 }
 
 void drawBackground() {
-    OSScreenClearBufferEx(0, 0xC0C0C0FF);
-    OSScreenClearBufferEx(1, 0xC0C0C0FF);
+    OSScreenClearBufferEx(0, BG_COLOR);
+    OSScreenClearBufferEx(1, BG_COLOR);
 }
 
 void drawLogo() {

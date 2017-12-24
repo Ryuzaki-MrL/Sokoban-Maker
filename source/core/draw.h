@@ -21,8 +21,9 @@
     typedef ALLEGRO_COLOR Color;
 #endif
 
-#define C_BLACK RGBA8(0, 0, 0, 255)
-#define C_WHITE RGBA8(255, 255, 255, 255)
+#define C_BLACK     RGBA8(0,0,0,255)
+#define C_WHITE     RGBA8(255,255,255,255)
+#define BG_COLOR    RGBA8(240,240,240,255)
 
 void drawInit();
 void drawFini();

@@ -41,7 +41,7 @@ void drawBackground() {
     if (background) {
         al_draw_bitmap(background, 0, 0, 0);
     } else {
-        al_clear_to_color(al_map_rgb(0xC0, 0xC0, 0xC0));
+        al_clear_to_color(BG_COLOR);
     }
 }
 
@@ -148,15 +148,6 @@ static void drawEntities() {
     al_use_transform(&transform);
 }
 
-// Debug only
-static void drawDebug() {
-    if (font) {
-        al_draw_textf(font, C_WHITE, 0, 00, 0, "Robot: (%i, %i)", getRobotX(), getRobotY());
-        al_draw_textf(font, C_WHITE, 0, 20, 0, "Camera: (%i, %i)", level.cam.scx, level.cam.scy);
-        al_draw_textf(font, C_WHITE, 0, 40, 0, "Boxes: %i", level.boxes);
-    }
-}
-
 void drawSetBackground(const char* fname) {
     if (background)
         al_destroy_bitmap(background);
@@ -164,9 +155,6 @@ void drawSetBackground(const char* fname) {
 }
 
 void drawLevel() {
-#ifdef DEBUG
-    drawDebug();
-#endif
     drawBackground();
     drawTilemap();
     drawEntities();

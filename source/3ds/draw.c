@@ -37,8 +37,7 @@ void drawClearColor(Color color) {
 }
 
 void drawBackground() {
-    pp2d_set_screen_color(GFX_TOP, ABGR8(0xFF, 0xC0, 0xC0, 0xC0));
-    pp2d_set_screen_color(GFX_BOTTOM, ABGR8(0xFF, 0xC0, 0xC0, 0xC0));
+    drawClearColor(BG_COLOR);
 }
 
 void drawLogo() {
