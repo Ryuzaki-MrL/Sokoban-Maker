@@ -7,7 +7,8 @@ static int screen = 0;
 
 void inputPasswordCallback(const char* password) {
     httpAddPostFieldText("pass", password[0] ? password : "guest");
-    httpAddPostFieldText("version", "1.0.0");
+    char v[] = {'0'+VERSION_MAJOR, '.', '0'+VERSION_MINOR, '.', '0'+VERSION_MICRO, '\0'};
+    httpAddPostFieldText("version", v);
     const char* res = httpPost();
     if (httpGetResponseCode() != 200) {
         error(res, NULL);
