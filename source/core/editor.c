@@ -62,8 +62,9 @@ static void redoAdd(act action, int arg0, int arg1, int arg2) {
 }
 
 static void actionEntityAdd(int x, int y, int id) {
-    entityAdd(x, y, id);
-    undoAdd(revertEntityAdd, x, y, id);
+    if (entityAdd(x, y, id)) {
+        undoAdd(revertEntityAdd, x, y, id);
+    }
 }
 
 static void revertEntityAdd(int x, int y, int id) {
@@ -72,8 +73,9 @@ static void revertEntityAdd(int x, int y, int id) {
 }
 
 static void actionEntityDestroy(int x, int y, int id) {
-    entityDestroyPos(x, y, 1, 1, id);
-    undoAdd(revertEntityDestroy, x, y, id);
+    if (entityDestroyPos(x, y, 1, 1, id)) {
+        undoAdd(revertEntityDestroy, x, y, id);
+    }
 }
 
 static void revertEntityDestroy(int x, int y, int id) {
@@ -186,6 +188,7 @@ void editorStart(levelmeta_t* meta) {
 void editorExit(int commit) {
     destroyStack(undostack);
     destroyStack(redostack);
+    undostack = redostack = NULL;
     if (commit)
         editorCommitLevel();
     state = ST_TITLE;

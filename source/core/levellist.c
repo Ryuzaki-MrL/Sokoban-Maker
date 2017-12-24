@@ -110,7 +110,7 @@ void updateLevelList() {
     } else if (isKeyDown(KEY_UP) && cursor > 0) {
         cursor--;
     }
-    if (isKeyDown(KEY_CANCEL))
+    if (isKeyDown(KEY_CANCEL) || isKeyDown(KEY_BACK))
         state = ST_TITLE;
     if (isKeyDown(KEY_CONFIRM)) {
         levelmeta_t* meta = (levelmeta_t*)getNodeData(&levels, cursor);

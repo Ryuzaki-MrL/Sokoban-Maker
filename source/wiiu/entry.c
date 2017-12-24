@@ -1,7 +1,4 @@
-#include <string.h>
-
 #include "wiiu.h"
-
 #include "main.h"
 
 int __entry_menu(int argc, char* argv[]) {
