@@ -3,7 +3,11 @@
 
 #include <stdlib.h>
 
-#define URL_ROOT    "http://192.168.0.17/sokomaker/"
+#ifdef DEBUG
+    #define URL_ROOT    "http://192.168.0.17/sokomaker/"
+#else
+    #define URL_ROOT    "http://sokomaker.000webhostapp.com/"
+#endif
 
 void networkInit();
 void networkFini();
