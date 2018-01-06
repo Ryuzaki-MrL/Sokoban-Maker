@@ -14,7 +14,7 @@ static char userlevelpath[260] = "";
 
 void initUserFolder() {
 #ifdef _3DS
-    strcpy(userbasepath, "/3ds/data");
+    strcpy(userbasepath, "/3ds");
 #elif defined(__wiiu__)
     strcpy(userbasepath, "sd:/wiiu/apps");
 #else
@@ -22,10 +22,6 @@ void initUserFolder() {
 #endif
     sprintf(userbasepath, "%s/Sokoban_Maker", userbasepath);
     sprintf(userlevelpath, "%s/levels", userbasepath);
-#ifdef _3DS
-    mkdir("/3ds", 0777);
-    mkdir("/3ds/data", 0777);
-#endif
 #if defined(_3DS) || defined(__wiiu__)
     mkdir(userbasepath, 0777);
     mkdir(userlevelpath, 0777);
@@ -44,13 +40,12 @@ const char* getLevelPath() {
 }
 
 char* strhex(char* out, const char* str, int len) {
-    char* hexresult = (char*)calloc(1, len*2 + 1);
+    char hexresult[(len<<1) + 1];
     int i;
     for (i = 0; i < len; i++) {
         sprintf(hexresult + (i<<1), "%02x", str[i]&0xff);
     }
     strcpy(out, hexresult);
-    free(hexresult);
     return out;
 }
 
