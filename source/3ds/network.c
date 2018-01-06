@@ -54,7 +54,7 @@ static int writeCallback(string_t* out) {
     u32 readsize;
     Result ret;
     if (!out->buffer) {
-        out->buffer = malloc(0x1000);
+        out->buffer = calloc(1, 0x1000);
     }
     do {
         ret = httpcDownloadDataTimeout(&context, (u8*)out->buffer + out->size, 0x1000, &readsize);

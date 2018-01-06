@@ -48,7 +48,8 @@ static const char* messages[LANGCOUNT][1000] = {
         "NÃO TESTADO",
         "VÁLIDO",
         "NÃO TESTADO*",
-        "VÁLIDO*"
+        "VÁLIDO*",
+        "Falha na conexão."
     }, {
         "New Game",
         "Continue",
@@ -88,7 +89,8 @@ static const char* messages[LANGCOUNT][1000] = {
         "UNTESTED",
         "VALID",
         "UNTESTED*",
-        "VALID*"
+        "VALID*",
+        "Connection failed."
     }
 };
 static const char* nullmsg = "NULL";

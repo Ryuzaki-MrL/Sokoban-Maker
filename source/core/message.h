@@ -41,6 +41,7 @@
 #define MSG_VALID       36
 #define MSG_UNTESTEDM   37
 #define MSG_VALIDM      38
+#define MSG_CONNFAIL    39
 
 void setLanguage(int newlang);
 int getLanguage();

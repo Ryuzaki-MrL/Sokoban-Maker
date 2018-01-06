@@ -11,7 +11,7 @@ void inputPasswordCallback(const char* password) {
     httpAddPostFieldText("version", v);
     const char* res = httpPost();
     if (httpGetResponseCode() != 200) {
-        error(res, NULL);
+        error(res[0] ? res : getMessage(MSG_CONNFAIL), NULL);
     } else {
         screen = 1;
     }
