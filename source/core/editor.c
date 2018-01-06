@@ -145,12 +145,16 @@ static void redo() {
 
 static void editorAddAtPos(int x, int y) {
     if (tilemode) {
-        actionTilePut(x, y, seltile);
+        if (TILE_GET(x, y) != (unsigned)seltile) {
+            actionTilePut(x, y, seltile);
+        }
     } else {
         if (selent == ENT_ROBOT) {
             actionResetRobot((x>>5)<<5, (y>>5)<<5, 0);
         } else {
-            actionEntityAdd((x>>5)<<5, (y>>5)<<5, selent);
+            if (!entityCollision((x>>5)<<5, (y>>5)<<5, 1, 1, selent)) {
+                actionEntityAdd((x>>5)<<5, (y>>5)<<5, selent);
+            }
         }
     }
     clearStack(redostack);
