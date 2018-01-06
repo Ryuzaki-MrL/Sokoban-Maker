@@ -50,10 +50,7 @@ static void updateEntityAux(void* data) {
 }
 
 static void updateEntities() {
-    int i;
-    for (i = 0; i < ENT_COUNT; i++) {
-        foreach(getEntityList(i), updateEntityAux);
-    }
+    entityForeach(updateEntityAux, ENT_ANY);
 }
 
 void updateMainGame() {

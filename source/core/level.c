@@ -179,7 +179,7 @@ int saveLevel(levelmeta_t* meta) {
     }
     fwrite(&tiledata, 1, sizeof(tiledata), lvl);
 
-    foreach(getEntityList(ENT_BOX), saveLevelObject);
+    entityForeach(saveLevelObject, ENT_BOX);
     fclose(lvl);
 
     return 1;

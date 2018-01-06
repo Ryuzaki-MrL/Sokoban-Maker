@@ -365,10 +365,7 @@ static void drawEntityAux(void* data) {
 }
 
 static void drawEntities() {
-    int i;
-    for (i = 0; i < ENT_COUNT; i++) {
-        foreach(getEntityList(i), drawEntityAux);
-    }
+    entityForeach(drawEntityAux, ENT_ANY);
 }
 
 void drawSetBackground(const char* fname) {

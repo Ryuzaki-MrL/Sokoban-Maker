@@ -1,17 +1,14 @@
+#include <string.h>
+
 #include "entity.h"
 #include "sprite.h"
 #include "util.h"
 
-static list_t entities[ENT_COUNT] = { { 0 } };
-static list_t entitiestmp[ENT_COUNT] = { { 0 } };
+static entity_t entities[ENT_COUNT * ENT_MAX] = { { 0 } };
+static entity_t entitiestmp[ENT_COUNT * ENT_MAX] = { { 0 } };
+static int entsize[ENT_COUNT] = { 0 };
 
-static int uidFinder(const void* ent, const void* args) {
-    return (((const entity_t*)ent)->uid == *((int*)args));
-}
-
-static int entityFinderPos(const void* data, const void* coords) {
-    entity_t* ent = (entity_t*)data;
-    int* args = (int*)coords;
+static int entityFinderPos(entity_t* ent, int* args) {
     const sprite_t* spr = getSprite(ent->sprite);
     if (!ent || !spr) return 0;
     return rectangleCollision(args[0], args[1], args[2], args[3], ent->x, ent->y, spr->width, spr->height);
@@ -19,23 +16,27 @@ static int entityFinderPos(const void* data, const void* coords) {
 
 entity_t* entityAdd(int x, int y, int id) {
     static int uid_ref = 0;
-    entity_t* ent = (entity_t*)calloc(1, sizeof(entity_t));
-    if (!ent) return NULL;
+    if (entsize[id] >= ENT_MAX) return NULL;
+    entity_t* ent = entities + id * ENT_MAX + entsize[id];
     ent->id = id;
     ent->uid = ++uid_ref;
     ent->x = ent->xstart = x;
     ent->y = ent->ystart = y;
     ent->sprite = id;
     ent->visible = 1;
-    insertAt(entities+id, -1, ent);
+    entsize[id]++;
     return ent;
 }
 
 int entityDestroy(int uid) {
-    int i;
+    int i, j;
     for (i = 0; i < ENT_COUNT; i++) {
-        if (removeAt(entities+i, getNodePos(entities+i, uidFinder, &uid), NULL)) {
-            return 1;
+        for (j = 0; j < entsize[i]; j++) {
+            if (entities[i * ENT_MAX + j].uid == uid) {
+                memcpy(&entities[i * ENT_MAX + j], &entities[i * ENT_MAX + entsize[i] - 1], sizeof(entity_t));
+                entsize[i]--;
+                return 1;
+            }
         }
     }
     return 0;
@@ -43,31 +44,48 @@ int entityDestroy(int uid) {
 
 int entityDestroyPos(int x, int y, int w, int h, int id) {
     int params[] = { x, y, w, h };
-    return removeAt(entities+id, getNodePos(entities+id, entityFinderPos, params), NULL);
+    int i, j;
+    for (i = 0; i < ENT_COUNT; i++) {
+        for (j = 0; j < entsize[i]; j++) {
+            if (entityFinderPos(&entities[id * ENT_MAX + j], params)) {
+                memcpy(&entities[id * ENT_MAX + j], &entities[id * ENT_MAX + entsize[i] - 1], sizeof(entity_t));
+                entsize[i]--;
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 void entityDestroyAll() {
     int i;
-    for (i = 0; i < ENT_COUNT; i++)
-        clearList(entities + i);
+    for (i = 0; i < ENT_COUNT; i++) {
+        entsize[i] = 0;
+    }
 }
 
 entity_t* entityCollision(int x, int y, int w, int h, int id) {
     int params[] = { x, y, w, h };
-    if (id == ENT_ANY) {
-        int i;
-        for (i = 0; i < ENT_COUNT; i++) {
-            entity_t* found = (entity_t*)search(entities+i, entityFinderPos, params);
-            if (found) return found;
+    int i, j;
+    for (i = (id==ENT_ANY) ? 0 : id; i < ENT_COUNT; i++) {
+        for (j = 0; j < entsize[i]; j++) {
+            if (entityFinderPos(&entities[id * ENT_MAX + j], params)) {
+                return &entities[id * ENT_MAX + j];
+            }
         }
-        return NULL;
+        if (id != ENT_ANY) break;
     }
-    return (entity_t*)search(entities+id, entityFinderPos, params);
+    return NULL;
 }
 
-const list_t* getEntityList(int id) {
-    if (id < 0) return entities;
-    return &entities[id];
+void entityForeach(bnd function, int id) {
+    int i, j;
+    for (i = (id==ENT_ANY) ? 0 : id; i < ENT_COUNT; i++) {
+        for (j = 0; j < entsize[i]; j++) {
+            function(&entities[i * ENT_MAX + j]);
+        }
+        if (id != ENT_ANY) break;
+    }
 }
 
 int getEntityCount(int id) {
@@ -75,26 +93,18 @@ int getEntityCount(int id) {
     if (id < 0) {
         int i;
         for (i = 0; i < ENT_COUNT; i++) {
-            t += entities[i].size;
+            t += entsize[i];
         }
     } else {
-        t = entities[id].size;
+        t = entsize[id];
     }
     return t;
 }
 
 void entitySaveState() {
-    int i;
-    for (i = 1; i < ENT_COUNT; i++) {
-        clearList(entitiestmp+i);
-        copyList(entities+i, entitiestmp+i, sizeof(entity_t));
-    }
+    memcpy(entitiestmp, entities, sizeof(entities));
 }
 
 void entityLoadState() {
-    int i;
-    for (i = 1; i < ENT_COUNT; i++) {
-        clearList(entities+i);
-        copyList(entitiestmp+i, entities+i, sizeof(entity_t));
-    }
+    memcpy(entities, entitiestmp, sizeof(entities));
 }

@@ -9,6 +9,7 @@
 #define ENT_BOX         1
 
 #define ENT_COUNT       2
+#define ENT_MAX      1024
 
 // Kinda useless struct, since there are only boxes.
 typedef struct sEntity {
@@ -36,7 +37,7 @@ void entityDestroyAll();
 
 entity_t* entityCollision(int x, int y, int w, int h, int id);
 
-const list_t* getEntityList(int id);
+void entityForeach(bnd function, int id);
 int getEntityCount(int id);
 
 void entitySaveState();

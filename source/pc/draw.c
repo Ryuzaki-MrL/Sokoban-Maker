@@ -139,10 +139,7 @@ static void drawEntities() {
     al_translate_transform(&transform, -scx, -scy);
     al_use_transform(&transform);
 
-    int i;
-    for (i = 0; i < ENT_COUNT; i++) {
-        foreach(getEntityList(i), drawEntityAux);
-    }
+    entityForeach(drawEntityAux, ENT_ANY);
 
     al_identity_transform(&transform);
     al_use_transform(&transform);

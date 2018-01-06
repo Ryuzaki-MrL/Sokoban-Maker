@@ -89,7 +89,6 @@ void drawSprite(int sprite, int frame, int x, int y) {
 
 static void drawTilemap() {
     int x, y;
-
     int ox = level.cam.scx >> 5;
     int oy = level.cam.scy >> 5;
     for (y = oy; y < oy+25 && y < TILE_ROW; y++) {
@@ -114,10 +113,7 @@ static void drawEntityAux(void* data) {
 }
 
 static void drawEntities() {
-    int i;
-    for (i = 0; i < ENT_COUNT; i++) {
-        foreach(getEntityList(i), drawEntityAux);
-    }
+    entityForeach(drawEntityAux, ENT_ANY);
 }
 
 void drawSetBackground(const char* fname) {
