@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "network.h"
 #include "update.h"
 #include "draw.h"
@@ -7,7 +9,8 @@ static int screen = 0;
 
 void inputPasswordCallback(const char* password) {
     httpAddPostFieldText("pass", password[0] ? password : "guest");
-    char v[] = {'0'+VERSION_MAJOR, '.', '0'+VERSION_MINOR, '.', '0'+VERSION_MICRO, '\0'};
+    char v[20];
+    sprintf(v, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO);
     httpAddPostFieldText("version", v);
     const char* res = httpPost();
     if (httpGetResponseCode() != 200) {
