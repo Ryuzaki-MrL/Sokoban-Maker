@@ -157,6 +157,14 @@ void drawLevel() {
     drawEntities();
 }
 
+int drawGetScreenWidth() {
+    return 640;
+}
+
+int drawGetScreenHeight() {
+    return 480;
+}
+
 void draw() {
     al_clear_to_color(C_BLACK);
     switch(state) {

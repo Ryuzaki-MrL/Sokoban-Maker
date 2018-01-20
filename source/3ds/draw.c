@@ -14,6 +14,8 @@ static int logo = SPRITE_COUNT + 1;
 static int tileset = SPRITE_COUNT + 2;
 static int background = SPRITE_COUNT + 3;
 static int grid = SPRITE_COUNT + 4;
+static gfxScreen_t targscreen = GFX_TOP;
+static gfxScreen_t levelscreen = GFX_BOTTOM;
 
 void drawInit() {
     pp2d_init();
@@ -130,10 +132,32 @@ void drawLevel() {
     drawEntities();
 }
 
+static void drawSetScreen(gfxScreen_t targ) {
+    if (targscreen != targ) {
+        targscreen = targ;
+        pp2d_draw_on(targ, GFX_LEFT);
+    }
+}
+
+void drawToggleLevelScreen() {
+    levelscreen = !levelscreen;
+}
+
+int drawGetScreenWidth() {
+    return ((targscreen == GFX_TOP) ? 400 : 320);
+}
+
+int drawGetScreenHeight() {
+    return 240;
+}
+
 void draw() {
     pp2d_begin_draw(GFX_TOP, GFX_LEFT);
+    targscreen = GFX_TOP;
     if (state == ST_EDITOR) {
-        pp2d_draw_on(GFX_BOTTOM, GFX_LEFT);
+        drawSetScreen(GFX_BOTTOM);
+    } else {
+        drawSetScreen((state == ST_MAIN) ? levelscreen : GFX_TOP);
     }
     switch(state) {
         case ST_PAUSE: drawPauseMenu(); break;
@@ -142,12 +166,13 @@ void draw() {
         case ST_EDITOR: drawLevelEditor(); break;
         default: drawLevel(); break;
     }
-    if (state != ST_EDITOR) {
-        pp2d_draw_on(GFX_BOTTOM, GFX_LEFT);
-    }
+    drawSetScreen(GFX_BOTTOM);
     switch(hud) {
         case H_MESSAGE: drawError(); break;
         case H_QUESTION: drawQuestion(); break;
+    }
+    if (!hud && state == ST_MAIN) {
+        drawSetScreen(levelscreen);
     }
     pp2d_end_draw();
 }

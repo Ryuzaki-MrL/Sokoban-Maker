@@ -5,21 +5,19 @@
 #include "sprite.h"
 
 #ifdef _3DS
-    #define DISPLAY_WIDTH 320
-    #define DISPLAY_HEIGHT 240
     void drawGridAux(int dx, int dy);
+    void drawToggleLevelScreen();
     typedef u32 Color;
 #elif defined(__wiiu__)
     #define RGBA8(r,g,b,a) ((((a)&0xFF)<<0) | (((b)&0xFF)<<8) | (((g)&0xFF)<<16) | (((r)&0xFF)<<24))
-    #define DISPLAY_WIDTH 854
-    #define DISPLAY_HEIGHT 480
     typedef u32 Color;
 #else
     #define RGBA8(r,g,b,a) al_map_rgba(r,g,b,a)
-    #define DISPLAY_WIDTH 640
-    #define DISPLAY_HEIGHT 480
     typedef ALLEGRO_COLOR Color;
 #endif
+
+#define DISPLAY_WIDTH drawGetScreenWidth()
+#define DISPLAY_HEIGHT drawGetScreenHeight()
 
 #define C_BLACK     RGBA8(0,0,0,255)
 #define C_WHITE     RGBA8(255,255,255,255)
@@ -43,6 +41,8 @@ void drawSprite(int sprite, int frame, int x, int y);
 
 void drawLevel();
 
+int drawGetScreenWidth();
+int drawGetScreenHeight();
 void drawSetBackground(const char* fname);
 
 void draw();

@@ -46,7 +46,6 @@ static void updateEntityAux(void* data) {
             }
         }
     }
-    //ent->frame += ent->anispd;
 }
 
 static void updateEntities() {
@@ -54,6 +53,11 @@ static void updateEntities() {
 }
 
 void updateMainGame() {
+#ifdef _3DS
+    if (isKeyDown(KEY_SELECT)) {
+        drawToggleLevelScreen();
+    }
+#endif
     if (isKeyDown(KEY_CANCEL)) {
         editorStopLevel();
         return;

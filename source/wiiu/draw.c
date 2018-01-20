@@ -378,6 +378,14 @@ void drawLevel() {
     drawEntities();
 }
 
+int drawGetScreenWidth() {
+    return 854;
+}
+
+int drawGetScreenHeight() {
+    return 480;
+}
+
 void draw() {
     if (hud) switch(hud) {
         case H_INPUT: drawUserInput(); break;
