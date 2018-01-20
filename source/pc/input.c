@@ -127,7 +127,7 @@ void updateUserInput() {
     unichar = 0;
 }
 
-#define ENTRY_X1    (DISPLAY_WIDTH>>2)
+#define ENTRY_X1    (DISPLAY_WIDTH>>3)
 #define ENTRY_X2    (DISPLAY_WIDTH - ENTRY_X1)
 #define ENTRY_Y1    (DISPLAY_HEIGHT/3)
 #define ENTRY_Y2    (DISPLAY_HEIGHT - ENTRY_Y1)

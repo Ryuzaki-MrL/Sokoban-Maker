@@ -121,7 +121,7 @@ void getUserInput(int size, const char* caption, int password, icb callback) {
     inputclb = callback;
 }
 
-#define ENTRY_X1    (DISPLAY_WIDTH>>2)
+#define ENTRY_X1    (DISPLAY_WIDTH>>3)
 #define ENTRY_X2    (DISPLAY_WIDTH - ENTRY_X1)
 #define ENTRY_Y1    (64)
 #define ENTRY_Y2    (ENTRY_Y1 + 120)
