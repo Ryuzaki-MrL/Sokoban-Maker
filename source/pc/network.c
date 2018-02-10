@@ -8,11 +8,6 @@
 #include "input.h"
 #include "list.h"
 
-typedef struct sString {
-    char* buffer;
-    size_t size;
-} string_t;
-
 typedef struct sHeader {
     const char* name;
     const char* value;
@@ -172,7 +167,7 @@ int downloadFile(const char* url, const char* path) {
 
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "SokobanMaker");
     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallbackFile);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, fwrite);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, out);
 
     curl_easy_perform(curl);

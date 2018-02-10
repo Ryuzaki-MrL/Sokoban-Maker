@@ -10,11 +10,6 @@
 
 #define TIMEOUT 10000000000
 
-typedef struct sString {
-    char* buffer;
-    size_t size;
-} string_t;
-
 static httpcContext context;
 static u32 responsecode = 0;
 static string_t requestbody = { 0 };

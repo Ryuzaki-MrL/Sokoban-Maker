@@ -9,11 +9,6 @@
 #include "input.h"
 #include "list.h"
 
-typedef struct sString {
-    char* buffer;
-    size_t size;
-} string_t;
-
 typedef struct sHeader {
     const char* name;
     const char* value;

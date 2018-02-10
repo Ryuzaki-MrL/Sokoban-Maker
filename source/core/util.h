@@ -1,6 +1,11 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+typedef struct sString {
+    char* buffer;
+    size_t size;
+} string_t;
+
 void initUserFolder();
 const char* getUserPath();
 const char* getLevelPath();
