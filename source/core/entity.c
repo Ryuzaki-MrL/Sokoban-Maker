@@ -44,14 +44,12 @@ int entityDestroy(int uid) {
 
 int entityDestroyPos(int x, int y, int w, int h, int id) {
     int params[] = { x, y, w, h };
-    int i, j;
-    for (i = 0; i < ENT_COUNT; i++) {
-        for (j = 0; j < entsize[i]; j++) {
-            if (entityFinderPos(&entities[id * ENT_MAX + j], params)) {
-                memcpy(&entities[id * ENT_MAX + j], &entities[id * ENT_MAX + entsize[i] - 1], sizeof(entity_t));
-                entsize[i]--;
-                return 1;
-            }
+    int i;
+    for (i = 0; i < entsize[id]; i++) {
+        if (entityFinderPos(&entities[id * ENT_MAX + i], params)) {
+            memcpy(&entities[id * ENT_MAX + i], &entities[id * ENT_MAX + entsize[id] - 1], sizeof(entity_t));
+            entsize[id]--;
+            return 1;
         }
     }
     return 0;
