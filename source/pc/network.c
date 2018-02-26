@@ -7,6 +7,7 @@
 #include "message.h"
 #include "input.h"
 #include "list.h"
+#include "util.h"
 
 typedef struct sHeader {
     const char* name;
