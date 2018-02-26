@@ -43,7 +43,7 @@ void drawBackground() {
 }
 
 void drawLogo() {
-    pp2d_draw_texture(logo, (DISPLAY_WIDTH>>1) - 111, 96);
+    pp2d_draw_texture(logo, (DISPLAY_WIDTH>>1) - 111, 64);
 }
 
 void drawText(Color color, int x, int y, const char* str) {
