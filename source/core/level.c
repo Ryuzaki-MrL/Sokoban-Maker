@@ -141,6 +141,7 @@ levelmeta_t* getLevelMeta(const char* fname) {
     struct sObj auxobj;
 static void saveLevelObject(void* data) {
     entity_t* ent = (entity_t*)data;
+    struct sObj auxobj;
     auxobj.id = ent->id;
     auxobj.x = ent->x;
     auxobj.y = ent->y;
