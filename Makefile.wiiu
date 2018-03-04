@@ -30,7 +30,7 @@ export OBJCOPY	:=	$(PREFIX)objcopy
 #---------------------------------------------------------------------------------
 TARGET		:=	Sokoban_Maker
 BUILD		:=	build_wiiu
-BUILD_DBG	:=	$(TARGET)_dbg
+BUILD_DBG	:=	$(BUILD)/$(TARGET)_dbg
 SOURCES		:=	source/core \
 				source/wiiu \
 				source/wiiu/fs \
@@ -123,7 +123,7 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
 					-L$(LIBOGC_LIB) -L$(PORTLIBS)/lib
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/output/wiiu/$(TARGET)
 .PHONY: $(BUILD) clean install
 
 #---------------------------------------------------------------------------------
