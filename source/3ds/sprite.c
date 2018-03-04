@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "sprite.h"
 
 static sprite_t nullspr = { .fname = "", .frames = 0, .width = 0, .height = 0 };

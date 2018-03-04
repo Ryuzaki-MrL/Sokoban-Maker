@@ -5,30 +5,33 @@
 #include "entity.h"
 #include "input.h"
 #include "state.h"
+#include "pp2d/ppft.h"
 
 #define FONT_SIZE   0.5
 #define FONT_YOFF   4
 
-//static int font = 1000;
-static int logo = SPRITE_COUNT + 1;
-static int tileset = SPRITE_COUNT + 2;
-static int background = SPRITE_COUNT + 3;
-static int grid = SPRITE_COUNT + 4;
+#define TEXTURE_LOGO    (SPRITE_COUNT + 1)
+#define TEXTURE_TILESET (SPRITE_COUNT + 2)
+#define TEXTURE_BG      (SPRITE_COUNT + 3)
+#define TEXTURE_GRID    (SPRITE_COUNT + 4)
+
 static gfxScreen_t targscreen = GFX_TOP;
 static gfxScreen_t levelscreen = GFX_BOTTOM;
+static ppftFont* font = NULL;
 
 void drawInit() {
     pp2d_init();
 
-    pp2d_load_texture_png(logo, "romfs:/logo3ds.png");
-    pp2d_load_texture_png(tileset, "romfs:/tileset.png");
-    pp2d_load_texture_png(grid, "romfs:/grid.png");
-    // TODO: load font
+    pp2d_load_texture_png(TEXTURE_LOGO, "romfs:/logo3ds.png");
+    pp2d_load_texture_png(TEXTURE_TILESET, "romfs:/tileset.png");
+    pp2d_load_texture_png(TEXTURE_GRID, "romfs:/grid.png");
+    font = ppft_load_font("romfs:/alterebro.ppft");
 
     loadSprites();
 }
 
 void drawFini() {
+    ppft_free_font(font);
     pp2d_exit();
 }
 
@@ -43,32 +46,48 @@ void drawBackground() {
 }
 
 void drawLogo() {
-    pp2d_draw_texture(logo, (DISPLAY_WIDTH>>1) - 111, 64);
+    pp2d_draw_texture(TEXTURE_LOGO, (DISPLAY_WIDTH>>1) - 111, 64);
 }
 
 void drawText(Color color, int x, int y, const char* str) {
-    pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, str);
+    if (font) {
+        ppft_draw_text(font, x, y, 1, 1, color, 0, 0, str);
+    } else {
+        pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, str);
+    }
 }
 
 void drawTextFormat(Color color, int x, int y, const char* str, ...) {
     char buffer[256];
     va_list valist;
     va_start(valist, str);
-    vsnprintf(buffer, 255, str, valist);
-    pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, buffer);
+    vsnprintf(buffer, 256, str, valist);
+    if (font) {
+        ppft_draw_text(font, x, y, 1, 1, color, 0, 0, buffer);
+    } else {
+        pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, buffer);
+    }
     va_end(valist);
 }
 
 void drawTextCenter(Color color, int x, int y, const char* str) {
-    x -= ((int)pp2d_get_text_width(str, FONT_SIZE, FONT_SIZE) >> 1);
-    pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, str);
+    if (font) {
+        ppft_draw_text(font, x, y, 1, 1, color, 0, 1, str);
+    } else {
+        x -= ((int)pp2d_get_text_width(str, FONT_SIZE, FONT_SIZE) >> 1);
+        pp2d_draw_text(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, str);
+    }
 }
 
 void drawTextMultiline(Color color, int x, int y, int w, int centre, const char* str) {
-    if (centre) {
-        drawTextCenter(color, x, y, str);
+    if (font) {
+        ppft_draw_text(font, x, y, 1, 1, color, w, centre, str);
     } else {
-        pp2d_draw_text_wrap(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, w, str);
+        if (centre) {
+            drawTextCenter(color, x, y, str);
+        } else {
+            pp2d_draw_text_wrap(x, y+FONT_YOFF, FONT_SIZE, FONT_SIZE, color, w, str);
+        }
     }
 }
 
@@ -78,7 +97,7 @@ void drawRectangle(int x1, int y1, int x2, int y2, Color color, int fill) {
 }
 
 void drawTile(int tile, int x, int y) {
-    pp2d_texture_select_part(tileset, x, y, tile<<5, 0, 32, 32);
+    pp2d_texture_select_part(TEXTURE_TILESET, x, y, tile<<5, 0, 32, 32);
     pp2d_texture_scale(0.75, 0.75);
     pp2d_texture_draw();
 }
@@ -97,7 +116,7 @@ static void drawTilemap() {
         for (x = ox; x < ox+15 && x < TILE_ROW; x++) {
             int i = level.tilemap[x + y*TILE_ROW] - 1;
             if (i < 0) continue;
-            pp2d_draw_texture_part(tileset, (x<<5) - level.cam.scx, (y<<5) - level.cam.scy, i<<5, 0, 32, 32);
+            pp2d_draw_texture_part(TEXTURE_TILESET, (x<<5) - level.cam.scx, (y<<5) - level.cam.scy, i<<5, 0, 32, 32);
         }
     }
 }
@@ -119,11 +138,11 @@ static void drawEntities() {
 }
 
 void drawSetBackground(const char* fname) {
-    pp2d_load_texture_png(background, fname);
+    pp2d_load_texture_png(TEXTURE_BG, fname);
 }
 
 void drawGridAux(int dx, int dy) {
-    pp2d_draw_texture(grid, dx, dy);
+    pp2d_draw_texture(TEXTURE_GRID, dx, dy);
 }
 
 void drawLevel() {
