@@ -57,7 +57,7 @@ ppftFont* ppft_load_font(const char* fname) {
     char pgname[256] = "romfs:/";
     for (i = 0; i < font->hdr.npages; ++i) {
         font->pages[i].texture = TEXTURE_FONT_START + (texcount++);
-        sprintf(pgname+7, font->pages[i].fname);
+        strcpy(pgname+7, font->pages[i].fname);
         pp2d_load_texture_png(font->pages[i].texture, pgname);
     }
 
@@ -82,38 +82,42 @@ float ppft_get_text_width(ppftFont* font, float scale, const char* text) {
         if (c == '\n') {
             if (w > mw) mw = w;
             w = 0;
-            text -= (c == '\n') ? 0 : 1;
         } else {
-            w += font->pages[0].chr[c].advance * scale;
+            w += font->pages[c >> 8].chr[c & 0xFF].advance * scale;
         }
     }
     return ((w > mw) ? w : mw);
 }
 
 static void ppft_word_wrap(ppftFont* font, float scale, int wrap, char* text) {
-    int i, wpos = 0, len = 0, lastlen = 0;
-    if (!wrap) return;
-    for (i = 0; text[i]; ++i) {
-        if (text[i] == '\n') {
-            len = 0;
-            continue;
-        }
-        if (text[i] == ' ') {
-            wpos = i;
+    if (wrap <= 0) return;
+    int len = 0, lastlen = 0;
+    char* wpos = text;
+    while(*text) {
+        u32 c;
+        int units = decode_utf8(&c, (const u8*)text);
+		if (units == -1) break;
+        if (c == ' ') {
+            wpos = text;
+            text += units;
             lastlen = len;
             continue;
         }
-        ppftChar chr = font->pages[0].chr[(int)text[i]];
+        text += units;
+        if (c == '\n') {
+            len = 0;
+            continue;
+        }
+        ppftChar chr = font->pages[c >> 8].chr[c & 0xFF];
         len += chr.w * scale;
         if (len > wrap) {
-            text[wpos] = '\n';
+            *wpos = '\n';
             len -= lastlen;
         }
     }
 }
 
 static void ppft_draw_text_internal(ppftFont* font, int x, int y, float scaleX, float scaleY, u32 color, int center, const char* text) {
-    //y += font->hdr.baseline;
     if (center) {
         x -= ((int)ppft_get_text_width(font, scaleX, text) >> 1);
     }
@@ -126,11 +130,10 @@ static void ppft_draw_text_internal(ppftFont* font, int x, int y, float scaleX, 
         if (c == '\n') {
             yy += font->hdr.lineHeight * scaleY;
             xx = x;
-            text -= (c == '\n') ? 0 : 1;
         }
-        ppftChar chr = font->pages[0].chr[c];
+        ppftChar chr = font->pages[c >> 8].chr[c & 0xFF];
         if (!chr.w) continue;
-        pp2d_texture_select_part(font->pages[0].texture, xx + chr.xoffs, yy + chr.yoffs, chr.x, chr.y, chr.w, chr.h);
+        pp2d_texture_select_part(font->pages[c >> 8].texture, xx + chr.xoffs, yy + chr.yoffs, chr.x, chr.y, chr.w, chr.h);
         pp2d_texture_blend(color);
         pp2d_texture_scale(scaleX, scaleY);
         pp2d_texture_draw();
