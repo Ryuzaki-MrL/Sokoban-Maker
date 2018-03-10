@@ -17,7 +17,7 @@ APP_AUTHOR          :=	Ryuzaki_MrL
 TARGET              :=	$(subst $e ,_,$(notdir $(APP_TITLE)))
 OUTDIR              :=	output/3ds
 BUILD               :=	build_3ds
-SOURCES             :=	source/3ds/pp2d source/3ds source/core
+SOURCES             :=	source/3ds/pp2d source/3ds source/core source/misc
 INCLUDES            :=	$(SOURCES)
 ROMFS               :=	romfs
 

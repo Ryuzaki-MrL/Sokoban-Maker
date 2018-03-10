@@ -35,7 +35,8 @@ SOURCES		:=	source/core \
 				source/wiiu \
 				source/wiiu/fs \
                 source/wiiu/sprite \
-				source/wiiu/system
+				source/wiiu/system \
+                source/misc
 DATA		:=	romfs
 
 INCLUDES	:=  $(SOURCES)
