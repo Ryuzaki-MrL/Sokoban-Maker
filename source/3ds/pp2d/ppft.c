@@ -77,7 +77,7 @@ float ppft_get_text_width(ppftFont* font, float scale, const char* text) {
     while(*text) {
         u32 c;
         int units = decode_utf8(&c, (const u8*)text);
-		if (units == -1) break;
+        if (units == -1) break;
         text += units;
         if (c == '\n') {
             if (w > mw) mw = w;
@@ -96,7 +96,7 @@ static void ppft_word_wrap(ppftFont* font, float scale, int wrap, char* text) {
     while(*text) {
         u32 c;
         int units = decode_utf8(&c, (const u8*)text);
-		if (units == -1) break;
+        if (units == -1) break;
         if (c == ' ') {
             wpos = text;
             text += units;
@@ -125,7 +125,7 @@ static void ppft_draw_text_internal(ppftFont* font, int x, int y, float scaleX, 
     while(*text) {
         u32 c;
         int units = decode_utf8(&c, (const u8*)text);
-		if (units == -1) break;
+        if (units == -1) break;
         text += units;
         if (c == '\n') {
             yy += font->hdr.lineHeight * scaleY;
@@ -150,10 +150,10 @@ void ppft_draw_text(ppftFont* font, int x, int y, float scaleX, float scaleY, u3
 
 void ppft_draw_textf(ppftFont* font, int x, int y, float scaleX, float scaleY, u32 color, int wrapX, int center, const char* text, ...) {
     char buffer[256];
-	va_list args;
-	va_start(args, text);
-	vsnprintf(buffer, 255, text, args);
+    va_list args;
+    va_start(args, text);
+    vsnprintf(buffer, 255, text, args);
     ppft_word_wrap(font, scaleX, wrapX, buffer);
-	ppft_draw_text_internal(font, x, y, scaleX, scaleY, color, center, buffer);
-	va_end(args);
+    ppft_draw_text_internal(font, x, y, scaleX, scaleY, color, center, buffer);
+    va_end(args);
 }
